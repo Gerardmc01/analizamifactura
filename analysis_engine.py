@@ -19,61 +19,101 @@ def extract_text_from_pdf(file_stream):
 
 def find_total_amount(text):
     """
-    Busca el importe total en una factura de luz española.
-    Optimizado para facturas de Iberdrola, Endesa, Naturgy, etc.
+    Busca el importe total en facturas reales de España.
+    Ahora entrenado con factura real de Energia XXI/Endesa.
     """
     if not text:
         return 0.0
     
+    # Limpiar texto para mejor búsqueda
+    text_clean = text.replace('\n', ' ')
+    
     patterns = [
-        # Iberdrola específico
-        r"TOTAL\s+IMPORTE\s+FACTURA\s*[:\.]?\s*(\d+[,\.]\d{2})\s*€",
-        r"CUOTA\s+FIJA\s+MENSUAL\s+A\s+PAGAR\s*[:\.]?\s*(\d+[,\.]\d{2})\s*€",
-        # Genéricos
-        r"Total\s+a\s+pagar\s*[:\.]?\s*(\d+[,\.]\d{2})",
-        r"Importe\s+total\s*[:\.]?\s*(\d+[,\.]\d{2})",
-        r"TOTAL\s+FACTURA\s*[:\.]?\s*(\d+[,\.]\d{2})",
-        r"Total\s+factura\s*[:\.]?\s*(\d+[,\.]\d{2})",
-        r"(\d+[,\.]\d{2})\s*€\s*$"
+        # Endesa/Energia XXI - formato exacto de factura real
+        r"IMPORT\s+FACTURA[:\s]*(\d+[\.,]\d{2})\s*€",
+        r"TOTAL\s+IMPORT\s+FACTURA[:\s]*(\d+[\.,]\d{2})\s*€",
+        
+        # Iberdrola
+        r"TOTAL\s+IMPORTE\s+FACTURA[:\s]*(\d+[\.,]\d{2})",
+        r"Importe\s+de\s+la\s+factura[:\s]*(\d+[\.,]\d{2})",
+        
+        # Naturgy
+        r"Total\s+a\s+pagar[:\s]*(\d+[\.,]\d{2})",
+        r"IMPORTE\s+TOTAL[:\s]*(\d+[\.,]\d{2})",
+        
+        # Genéricos más permisivos
+        r"Total\s+factura[:\s]*(\d+[\.,]\d{2})",
+        r"Importe\s+total[:\s]*(\d+[\.,]\d{2})",
+        r"TOTAL\s+FACTURA[:\s]*(\d+[\.,]\d{2})",
+        
+        # Formato con espacio antes del euro
+        r"(?:TOTAL|IMPORTE|Total)\s+(?:FACTURA|factura)[:\s]*(\d+[\.,]\d{2})\s*€",
     ]
     
     for pattern in patterns:
-        matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
+        matches = re.findall(pattern, text_clean, re.IGNORECASE)
         if matches:
-            amount_str = matches[-1].replace('.', '').replace(',', '.')
+            # Tomar la última coincidencia (suele ser el total final)
+            amount_str = matches[-1].replace(',', '.')
             try:
                 amount = float(amount_str)
-                if 10 < amount < 1000:  # Rango realista para factura luz
+                if 5 < amount < 10000:  # Rango realista ampliado
+                    print(f"✅ Importe detectado: {amount}€ con patrón: {pattern}")
                     return amount
             except:
                 continue
     
+    print("❌ No se pudo detectar el importe total")
     return 0.0
+
 
 def find_consumption_kwh(text):
     """
-    Busca el consumo en kWh en la factura.
+    Busca el consumo en kWh en facturas reales de España.
+    Ahora entrenado con factura real de Energia XXI/Endesa.
     """
     if not text:
         return 0
     
+    # Limpiar texto
+    text_clean = text.replace('\n', ' ')
+    
     patterns = [
-        r"Consumo\s+en\s+el\s+per[ií]odo\s*[:\.]?\s*(\d+)\s*kWh",
-        r"Consumo\s+en\s+el\s+per[ií]odo\s*[:\.]?.*?(\d+)\s*kWh",
-        r"Energ[ií]a\s+consumida\s*[:\.]?\s*(\d+)\s*kWh",
-        r"(\d+)\s*kWh"
+        # Endesa/Energia XXI - formato exacto "Heu consum en el període facturat ha estat 178,810 kWh"
+        r"consum.*?període.*?ha\s+estat\s+(\d+[\.,]\d+)\s*kWh",
+        r"consum.*?ha\s+estat\s+(\d+[\.,]\d+)\s*kWh",
+        
+        # Iberdrola
+        r"Consumo\s+en\s+el\s+período[:\s]*(\d+[\.,]\d+)\s*kWh",
+        r"Energía\s+consumida[:\s]*(\d+[\.,]\d+)\s*kWh",
+        
+        # Naturgy
+        r"Total\s+consumo[:\s]*(\d+[\.,]\d+)\s*kWh",
+        r"Consumo\s+total[:\s]*(\d+[\.,]\d+)\s*kWh",
+        
+        # Genéricos
+        r"Consumo[:\s]*(\d+[\.,]\d+)\s*kWh",
+        r"(\d+[\.,]\d+)\s*kWh.*consum",
+        
+        # Formato numérico prominente con kWh
+        r"(\d{2,4}[\.,]\d{1,3})\s*kWh",
     ]
     
     for pattern in patterns:
-        matches = re.findall(pattern, text, re.IGNORECASE)
+        matches = re.findall(pattern, text_clean, re.IGNORECASE)
         if matches:
-            try:
-                kwh = int(matches[0]) if isinstance(matches[0], str) else int(matches[0][0])
-                if 10 < kwh < 10000:  # Rango realista
-                    return kwh
-            except:
-                continue
+            # Limpiar y convertir
+            for match in matches:
+                kwh_str = match.replace('.', '').replace(',', '.')
+                try:
+                    kwh = float(kwh_str)
+                    if 10 < kwh < 100000:  # Rango realista para consumo mensual/bimensual
+                        print(f"✅ Consumo detectado: {kwh} kWh con patrón: {pattern}")
+                        return int(kwh)
+                except:
+                    continue
     
+    print("❌ No se pudo detectar el consumo en kWh")
     return 0
 
 
