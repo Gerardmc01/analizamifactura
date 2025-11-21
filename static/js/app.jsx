@@ -19,21 +19,21 @@ const IconTrendingDown = ({ className }) => (
 
 // --- Components ---
 
-const Navbar = () => (
+const Navbar = ({ onNavigate, currentPage }) => (
     <nav className="flex items-center justify-between px-4 md:px-6 py-4 glass-panel sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="bg-blue-500 p-1.5 rounded-lg">
                 <IconZap className="text-white w-5 h-5" />
             </div>
             <span className="text-lg md:text-xl font-bold tracking-tight">AnalizaMiFactura</span>
         </div>
         <div className="hidden md:flex gap-6 text-sm font-medium text-slate-300">
-            <a href="#" className="hover:text-white transition">Cómo funciona</a>
-            <a href="#" className="hover:text-white transition">Seguridad</a>
-            <a href="#" className="hover:text-white transition">Empresas</a>
+            <button onClick={() => onNavigate('como-funciona')} className="hover:text-white transition">Cómo funciona</button>
+            <button onClick={() => onNavigate('seguridad')} className="hover:text-white transition">Seguridad</button>
+            <button onClick={() => onNavigate('empresas')} className="hover:text-white transition">Empresas</button>
         </div>
-        <button className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition">
-            Acceder
+        <button onClick={() => onNavigate('landing')} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition">
+            Analizar Factura
         </button>
     </nav>
 );
@@ -347,13 +347,151 @@ const Dashboard = ({ data, onReset }) => {
     );
 };
 
+// --- Information Pages ---
+
+const ComoFuncionaPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">¿Cómo funciona?</h1>
+
+        <div className="space-y-8">
+            <div className="glass-panel p-8 rounded-2xl">
+                <div className="flex items-start gap-6">
+                    <div className="bg-blue-500 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0 text-2xl font-bold">1</div>
+                    <div>
+                        <h3 className="text-2xl font-bold mb-3">Sube tu factura PDF</h3>
+                        <p className="text-slate-300 leading-relaxed">Descarga tu factura de luz en formato PDF desde la web de tu compañía eléctrica (Iberdrola, Endesa, Naturgy, etc.) y súbela a nuestra plataforma.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <div className="flex items-start gap-6">
+                    <div className="bg-green-500 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0 text-2xl font-bold">2</div>
+                    <div>
+                        <h3 className="text-2xl font-bold mb-3">Análisis automático</h3>
+                        <p className="text-slate-300 leading-relaxed">Nuestro sistema lee automáticamente el importe total y el consumo en kWh de tu factura. Además, consultamos el precio PVPC real del día desde la API de ESIOS (Red Eléctrica de España).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <div className="flex items-start gap-6">
+                    <div className="bg-purple-500 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0 text-2xl font-bold">3</div>
+                    <div>
+                        <h3 className="text-2xl font-bold mb-3">Comparativa personalizada</h3>
+                        <p className="text-slate-300 leading-relaxed">Comparamos tu factura con las 8 mejores tarifas del mercado español (Iberdrola, Endesa, Naturgy, TotalEnergies, Repsol, Octopus Energy...) y te mostramos exactamente cuánto ahorrarías con cada una.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <div className="flex items-start gap-6">
+                    <div className="bg-yellow-500 rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0 text-2xl font-bold">4</div>
+                    <div>
+                        <h3 className="text-2xl font-bold mb-3">Recibe recomendaciones</h3>
+                        <p className="text-slate-300 leading-relaxed">Te mostramos las mejores ofertas ordenadas por ahorro, detectamos posibles cargos innecesarios y te damos una puntuación de tu tarifa actual. Todo en segundos y 100% gratis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onClick={() => onNavigate('landing')} className="mt-12 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition">
+            Analizar mi factura ahora
+        </button>
+    </div>
+);
+
+const SeguridadPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">Tu privacidad es nuestra prioridad</h1>
+
+        <div className="space-y-6">
+            <div className="glass-panel p-8 rounded-2xl">
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                    <span className="text-green-500">🔒</span> Procesamiento seguro
+                </h3>
+                <p className="text-slate-300 leading-relaxed">Tu factura se procesa de forma temporal y se elimina inmediatamente después del análisis. No guardamos ni compartimos tus datos personales con terceros.</p>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                    <span className="text-blue-500">🛡️</span> Conexión cifrada SSL
+                </h3>
+                <p className="text-slate-300 leading-relaxed">Toda la comunicación entre tu navegador y nuestros servidores está cifrada con protocolo HTTPS/TLS de última generación.</p>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                    <span className="text-purple-500">👁️</span> Sin registro necesario
+                </h3>
+                <p className="text-slate-300 leading-relaxed">No necesitas crear cuenta ni proporcionar datos personales. Simplemente sube tu factura, obtén el análisis y listo.</p>
+            </div>
+
+            <div className="glass-panel p-8 rounded-2xl">
+                <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                    <span className="text-yellow-500">📊</span> Datos reales y verificables
+                </h3>
+                <p className="text-slate-300 leading-relaxed">Usamos datos oficiales de ESIOS (Red Eléctrica de España) y tarifas públicas de las compañías eléctricas. Todo es transparente y verificable.</p>
+            </div>
+        </div>
+    </div>
+);
+
+const EmpresasPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">Soluciones para empresas</h1>
+
+        <div className="glass-panel p-8 rounded-2xl mb-8">
+            <h2 className="text-3xl font-bold mb-6">Optimiza los costes energéticos de tu empresa</h2>
+            <p className="text-xl text-slate-300 leading-relaxed mb-6">
+                ¿Tienes múltiples suministros eléctricos? ¿Facturas superiores a 500€/mes? Te ayudamos a reducir tus costes energéticos de forma profesional.
+            </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <div className="glass-panel p-6 rounded-2xl">
+                <h3 className="text-xl font-bold mb-3 text-blue-400">✓ Análisis masivo de facturas</h3>
+                <p className="text-slate-300">Analiza todas tus facturas de una vez y obtén un informe completo de ahorro potencial.</p>
+            </div>
+
+            <div className="glass-panel p-6 rounded-2xl">
+                <h3 className="text-xl font-bold mb-3 text-green-400">✓ Asesoramiento personalizado</h3>
+                <p className="text-slate-300">Te ayudamos a negociar con las eléctricas y encontrar la mejor tarifa para tu perfil de consumo.</p>
+            </div>
+
+            <div className="glass-panel p-6 rounded-2xl">
+                <h3 className="text-xl font-bold mb-3 text-purple-400">✓ Monitorización continua</h3>
+                <p className="text-slate-300">Alertas automáticas cuando detectamos una tarifa mejor para tu empresa.</p>
+            </div>
+
+            <div className="glass-panel p-6 rounded-2xl">
+                <h3 className="text-xl font-bold mb-3 text-yellow-400">✓ Ahorro garantizado</h3>
+                <p className="text-slate-300">Cobramos solo si conseguimos reducir tus costes. Sin riesgos para ti.</p>
+            </div>
+        </div>
+
+        <div className="glass-panel p-8 rounded-2xl bg-blue-500/10 border-blue-500/20">
+            <h3 className="text-2xl font-bold mb-4">¿Interesado?</h3>
+            <p className="text-slate-300 mb-6">Contacta con nosotros para una auditoría energética gratuita de tu empresa.</p>
+            <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition">
+                Solicitar auditoría gratuita
+            </button>
+        </div>
+    </div>
+);
+
 // --- Main App ---
 
 const App = () => {
-    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error
+    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error, como-funciona, seguridad, empresas
     const [file, setFile] = useState(null);
     const [data, setData] = useState(null);
     const [error, setError] = useState('');
+
+    const handleNavigate = (page) => {
+        setView(page);
+        window.scrollTo(0, 0);
+    };
 
     const handleStart = () => setView('upload');
 
@@ -402,12 +540,15 @@ const App = () => {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar />
+            <Navbar onNavigate={handleNavigate} currentPage={view} />
             <main className="flex-grow relative">
                 {view === 'landing' && <Hero onStart={handleStart} />}
                 {view === 'upload' && <UploadStep onUpload={handleUpload} />}
                 {view === 'analyzing' && <AnalyzingStep />}
                 {view === 'results' && <Dashboard data={data} onReset={handleReset} />}
+                {view === 'como-funciona' && <ComoFuncionaPage onNavigate={handleNavigate} />}
+                {view === 'seguridad' && <SeguridadPage onNavigate={handleNavigate} />}
+                {view === 'empresas' && <EmpresasPage onNavigate={handleNavigate} />}
                 {view === 'error' && (
                     <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
                         <div className="max-w-md text-center">
@@ -436,3 +577,4 @@ const App = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
+

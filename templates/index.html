@@ -1,23 +1,51 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-ES">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnalizaMiFactura - Ahorra en tus servicios</title>
-    
+
+    <!-- SEO Meta Tags en Español -->
+    <title>Analiza Mi Factura - Ahorra en tu Factura de Luz | Comparador de Tarifas Eléctricas España</title>
+    <meta name="description"
+        content="Sube tu factura de luz y descubre cuánto puedes ahorrar. Comparamos tu tarifa eléctrica con las mejores ofertas de Iberdrola, Endesa, Naturgy y más. Análisis GRATIS con datos reales del PVPC.">
+    <meta name="keywords"
+        content="comparador luz, factura electricidad, ahorrar luz, PVPC, tarifas eléctricas España, Iberdrola, Endesa, Naturgy, factura luz cara, reducir factura electricidad">
+    <meta name="author" content="AnalizaMiFactura.com">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Spanish">
+    <meta name="geo.region" content="ES">
+    <meta name="geo.placename" content="España">
+
+    <!-- Open Graph para Redes Sociales -->
+    <meta property="og:title" content="Analiza Mi Factura - Ahorra en tu Factura de Luz">
+    <meta property="og:description"
+        content="Descubre cuánto pagas de más en tu factura eléctrica. Análisis gratuito con datos reales del PVPC.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://analizamifactura.onrender.com">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Analiza Mi Factura - Ahorra en tu Factura de Luz">
+    <meta name="twitter:description" content="Comparador gratuito de tarifas eléctricas en España">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" content="https://analizamifactura.onrender.com">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <!-- Framer Motion (via CDN for animations if possible, or just CSS) -->
     <!-- We will use CSS animations and Tailwind for simplicity and speed without build step -->
 
@@ -72,14 +100,17 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: #0f172a; /* Slate 900 */
+            background-color: #0f172a;
+            /* Slate 900 */
             color: white;
         }
+
         .glass-panel {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .gradient-text {
             background: linear-gradient(to right, #38bdf8, #818cf8);
             -webkit-background-clip: text;
@@ -87,12 +118,14 @@
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
     <!-- Main React Application -->
     <script type="text/babel" src="/static/js/app.jsx"></script>
-    
+
     <!-- Initialize Lucide Icons after render (handled in React usually, but we might need a helper) -->
 </body>
+
 </html>
