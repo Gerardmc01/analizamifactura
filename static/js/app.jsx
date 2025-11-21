@@ -19,7 +19,7 @@ const IconTrendingDown = ({ className }) => (
 
 // --- Components ---
 
-const Navbar = ({ onNavigate, currentPage }) => (
+const Navbar = ({ onNavigate, onStart }) => (
     <nav className="flex items-center justify-between px-4 md:px-6 py-4 glass-panel sticky top-0 z-50">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="bg-blue-500 p-1.5 rounded-lg">
@@ -32,7 +32,7 @@ const Navbar = ({ onNavigate, currentPage }) => (
             <button onClick={() => onNavigate('seguridad')} className="hover:text-white transition">Seguridad</button>
             <button onClick={() => onNavigate('empresas')} className="hover:text-white transition">Empresas</button>
         </div>
-        <button onClick={() => onNavigate('landing')} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition">
+        <button onClick={onStart} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition">
             Analizar Factura
         </button>
     </nav>
@@ -349,7 +349,7 @@ const Dashboard = ({ data, onReset }) => {
 
 // --- Information Pages ---
 
-const ComoFuncionaPage = ({ onNavigate }) => (
+const ComoFuncionaPage = ({ onNavigate, onStart }) => (
     <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
         <h1 className="text-4xl md:text-5xl font-bold mb-8">¿Cómo funciona?</h1>
 
@@ -395,7 +395,7 @@ const ComoFuncionaPage = ({ onNavigate }) => (
             </div>
         </div>
 
-        <button onClick={() => onNavigate('landing')} className="mt-12 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition">
+        <button onClick={onStart} className="mt-12 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition">
             Analizar mi factura ahora
         </button>
     </div>
@@ -540,13 +540,13 @@ const App = () => {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar onNavigate={handleNavigate} currentPage={view} />
+            <Navbar onNavigate={handleNavigate} onStart={handleStart} />
             <main className="flex-grow relative">
                 {view === 'landing' && <Hero onStart={handleStart} />}
                 {view === 'upload' && <UploadStep onUpload={handleUpload} />}
                 {view === 'analyzing' && <AnalyzingStep />}
                 {view === 'results' && <Dashboard data={data} onReset={handleReset} />}
-                {view === 'como-funciona' && <ComoFuncionaPage onNavigate={handleNavigate} />}
+                {view === 'como-funciona' && <ComoFuncionaPage onNavigate={handleNavigate} onStart={handleStart} />}
                 {view === 'seguridad' && <SeguridadPage onNavigate={handleNavigate} />}
                 {view === 'empresas' && <EmpresasPage onNavigate={handleNavigate} />}
                 {view === 'error' && (
