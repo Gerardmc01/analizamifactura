@@ -50,15 +50,15 @@ const Hero = ({ onStart }) => (
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                 </span>
-                IA Avanzada para tu ahorro
+                Análisis inteligente con datos reales de ESIOS
             </div>
 
             <h1 className="text-4xl md:text-7xl font-bold leading-tight">
-                Deja de pagar de más en tus <span className="gradient-text">facturas</span>
+                Ahorra en tu factura de la <span className="gradient-text">luz</span>
             </h1>
 
             <p className="text-base md:text-xl text-slate-400 max-w-2xl mx-auto px-2">
-                Sube tu factura de luz, gas o internet. Nuestra IA detecta errores, cargos ocultos y te dice exactamente cuánto puedes ahorrar.
+                Sube tu factura eléctrica y descubre cuánto pagas de más. Comparamos con el PVPC y las mejores tarifas del mercado español.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4 px-4">
@@ -73,12 +73,12 @@ const Hero = ({ onStart }) => (
 
             <div className="pt-8 md:pt-12 grid grid-cols-3 gap-2 md:gap-8 text-center text-slate-500 text-xs md:text-sm">
                 <div>
-                    <div className="text-xl md:text-2xl font-bold text-white mb-1">15k+</div>
-                    Facturas
+                    <div className="text-xl md:text-2xl font-bold text-white mb-1">PVPC Real</div>
+                    Precio hoy
                 </div>
                 <div>
-                    <div className="text-xl md:text-2xl font-bold text-white mb-1">350€</div>
-                    Ahorro medio
+                    <div className="text-xl md:text-2xl font-bold text-white mb-1">8 eléctricas</div>
+                    Comparadas
                 </div>
                 <div>
                     <div className="text-xl md:text-2xl font-bold text-white mb-1">100%</div>
@@ -120,10 +120,10 @@ const UploadStep = ({ onUpload, isLoading }) => {
 
     return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 animate-slide-up py-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">Sube tu factura</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 text-center">Sube tu factura de la luz (PDF)</h2>
             <p className="text-slate-400 mb-8 text-center text-sm md:text-base max-w-md">
-                Recomendado: <strong>PDF</strong> (Lectura automática).<br />
-                Aceptamos imágenes (JPG/PNG) con entrada manual de datos.
+                Solo aceptamos facturas en formato <strong>PDF</strong>.<br />
+                Descárgala desde la web de tu compañía eléctrica.
             </p>
 
             <div
@@ -141,22 +141,25 @@ const UploadStep = ({ onUpload, isLoading }) => {
                     type="file"
                     className="hidden"
                     onChange={handleChange}
-                    accept=".pdf,.jpg,.jpeg,.png"
+                    accept=".pdf"
                 />
 
                 <div className="bg-slate-700 p-3 md:p-4 rounded-full mb-3 md:mb-4">
                     <IconUpload className="w-6 h-6 md:w-8 md:h-8 text-blue-400" />
                 </div>
-                <p className="text-base md:text-lg font-medium text-slate-200">Arrastra tu archivo</p>
+                <p className="text-base md:text-lg font-medium text-slate-200">Arrastra tu factura aquí</p>
                 <p className="text-xs md:text-sm text-slate-500 mt-1">o haz clic para explorar</p>
             </div>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3 md:gap-4">
-                {['Luz', 'Gas', 'Internet', 'Móvil'].map(type => (
-                    <button key={type} className="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 text-sm hover:bg-slate-700 hover:text-white transition">
-                        {type}
-                    </button>
-                ))}
+            <div className="mt-8 text-center">
+                <p className="text-sm text-slate-500">Trabajamos con facturas de:</p>
+                <div className="flex flex-wrap justify-center gap-3 mt-3">
+                    {['Iberdrola', 'Endesa', 'Naturgy', 'Repsol'].map(company => (
+                        <span key={company} className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
+                            {company}
+                        </span>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -212,58 +215,6 @@ const AnalyzingStep = () => {
 const Dashboard = ({ data, onReset }) => {
     if (!data) return null;
 
-    // State for manual correction
-    const [currentTotal, setCurrentTotal] = useState(data.current_total);
-    const [isEditing, setIsEditing] = useState(data.current_total === 0); // Auto-edit if 0
-    const [recommendations, setRecommendations] = useState(data.recommendations);
-    const [potentialSavings, setPotentialSavings] = useState(data.potential_savings);
-    const [marketAverage, setMarketAverage] = useState(data.market_average);
-    const [score, setScore] = useState(data.score);
-
-    // Recalculate when total changes
-    useEffect(() => {
-        if (currentTotal > 0) {
-            // Simple logic to simulate recalculation based on the new total
-            // In a real app, this might call the backend again or use the same logic as backend
-            const estimatedKwh = (currentTotal * 0.6) / 0.15;
-
-            // Re-run offers logic locally for instant feedback
-            const marketOffers = [
-                { company: "Iberdrola", plan: "Plan Online", price_kwh: 0.11 },
-                { company: "Endesa", plan: "Conecta", price_kwh: 0.10 },
-                { company: "Naturgy", plan: "Tarifa Por Uso", price_kwh: 0.12 },
-                { company: "TotalEnergies", plan: "A Tu Aire", price_kwh: 0.09 },
-            ];
-
-            let bestPrice = currentTotal;
-            const newRecs = [];
-
-            marketOffers.forEach(offer => {
-                const estimatedCost = (estimatedKwh * offer.price_kwh) / 0.6;
-                if (estimatedCost < currentTotal) {
-                    newRecs.push({
-                        company: offer.company,
-                        offer: offer.plan,
-                        price: estimatedCost,
-                        savings: currentTotal - estimatedCost
-                    });
-                    if (estimatedCost < bestPrice) bestPrice = estimatedCost;
-                }
-            });
-
-            newRecs.sort((a, b) => b.savings - a.savings);
-
-            setRecommendations(newRecs.slice(0, 3));
-            setPotentialSavings(currentTotal - bestPrice);
-            setMarketAverage(currentTotal * 0.9);
-            setScore(Math.min(100, Math.max(0, Math.round((bestPrice / currentTotal) * 100))));
-        }
-    }, [currentTotal]);
-
-    const handleSaveTotal = () => {
-        setIsEditing(false);
-    };
-
     return (
         <div className="max-w-6xl mx-auto px-4 py-8 animate-slide-up pb-20">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -276,20 +227,6 @@ const Dashboard = ({ data, onReset }) => {
                 </button>
             </div>
 
-            {/* Alert if OCR failed */}
-            {!data.ocr_success && (
-                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl flex items-start gap-3">
-                    <IconAlert className="text-yellow-500 w-6 h-6 flex-shrink-0 mt-1" />
-                    <div>
-                        <h4 className="font-bold text-yellow-500">Atención: Lectura automática limitada</h4>
-                        <p className="text-sm text-slate-300 mt-1">
-                            Al subir una imagen, no podemos leer el importe exacto con precisión del 100%.
-                            Por favor, <strong>confirma o corrige el importe total</strong> abajo para ver tu ahorro real.
-                        </p>
-                    </div>
-                </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 {/* Score Card */}
                 <div className="glass-panel p-6 rounded-2xl relative overflow-hidden">
@@ -298,82 +235,63 @@ const Dashboard = ({ data, onReset }) => {
                     </div>
                     <h3 className="text-slate-400 font-medium mb-2">Puntuación</h3>
                     <div className="flex items-end gap-2">
-                        <span className={`text-5xl font-bold ${score < 50 ? 'text-red-500' : score < 80 ? 'text-yellow-500' : 'text-green-500'}`}>
-                            {score}/100
+                        <span className={`text-5xl font-bold ${data.score < 50 ? 'text-red-500' : data.score < 80 ? 'text-yellow-500' : 'text-green-500'}`}>
+                            {data.score}/100
                         </span>
                     </div>
                     <p className="text-sm text-slate-400 mt-2">
-                        {score < 50 ? 'Tu tarifa es muy mejorable.' : 'Tienes una tarifa aceptable.'}
+                        {data.score < 50 ? 'Tu tarifa es muy mejorable.' : 'Tienes una tarifa aceptable.'}
                     </p>
+                    {data.estimated_kwh > 0 && (
+                        <p className="text-xs text-blue-400 mt-3">
+                            📊 Consumo: <strong>{data.estimated_kwh} kWh</strong>
+                        </p>
+                    )}
                 </div>
 
                 {/* Savings Card */}
                 <div className="glass-panel p-6 rounded-2xl border-green-500/30 bg-green-500/5">
                     <h3 className="text-green-400 font-medium mb-2">Ahorro Estimado</h3>
                     <div className="flex items-end gap-2">
-                        <span className="text-5xl font-bold text-white">{potentialSavings.toFixed(2)}€</span>
+                        <span className="text-5xl font-bold text-white">{data.potential_savings.toFixed(2)}€</span>
                         <span className="text-lg text-green-400 mb-1">/ mes</span>
                     </div>
                     <div className="mt-4 inline-flex items-center gap-1 text-sm text-green-400 bg-green-500/10 px-2 py-1 rounded">
                         <IconTrendingDown className="w-4 h-4" />
-                        <span>{currentTotal > 0 ? Math.round((potentialSavings / currentTotal) * 100) : 0}% menos</span>
+                        <span>{data.current_total > 0 ? Math.round((data.potential_savings / data.current_total) * 100) : 0}% menos</span>
                     </div>
+                    {data.pvpc_today && (
+                        <p className="text-xs text-slate-400 mt-3">
+                            ⚡ PVPC hoy: <strong>{data.pvpc_today.toFixed(4)}€/kWh</strong>
+                        </p>
+                    )}
                 </div>
 
-                {/* Market Comparison (Editable) */}
+                {/* Market Comparison */}
                 <div className="glass-panel p-6 rounded-2xl border-blue-500/20 relative">
                     <h3 className="text-slate-400 font-medium mb-4">Tu Factura Actual</h3>
 
-                    {isEditing ? (
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs text-slate-500">Introduce el importe total de tu factura:</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="number"
-                                    value={currentTotal}
-                                    onChange={(e) => setCurrentTotal(parseFloat(e.target.value) || 0)}
-                                    className="bg-slate-800 border border-blue-500 text-white text-2xl font-bold rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={handleSaveTotal}
-                                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-lg font-medium transition"
-                                >
-                                    <IconCheck className="w-6 h-6" />
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex justify-between items-end mb-4 group cursor-pointer" onClick={() => setIsEditing(true)}>
-                            <div>
-                                <span className="text-4xl font-bold text-white">{currentTotal.toFixed(2)}€</span>
-                                <p className="text-xs text-blue-400 mt-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                    Clic para editar <IconZap className="w-3 h-3" />
-                                </p>
-                            </div>
-                            <button className="text-slate-500 hover:text-white p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                            </button>
-                        </div>
-                    )}
+                    <div className="mb-4">
+                        <span className="text-4xl font-bold text-white">{data.current_total.toFixed(2)}€</span>
+                    </div>
 
-                    <div className="space-y-4 mt-4 pt-4 border-t border-white/5">
+                    <div className="space-y-4 pt-4 border-t border-white/5">
                         <div className="space-y-1">
                             <div className="flex justify-between text-sm">
                                 <span>Media Mercado</span>
-                                <span className="font-bold">{marketAverage.toFixed(2)}€</span>
+                                <span className="font-bold">{data.market_average.toFixed(2)}€</span>
                             </div>
                             <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                                <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${(marketAverage / (currentTotal || 1)) * 100}%` }}></div>
+                                <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${(data.market_average / data.current_total) * 100}%` }}></div>
                             </div>
                         </div>
                         <div className="space-y-1">
                             <div className="flex justify-between text-sm">
                                 <span className="text-green-400">Mejor oferta</span>
-                                <span className="font-bold text-green-400">{(currentTotal - potentialSavings).toFixed(2)}€</span>
+                                <span className="font-bold text-green-400">{(data.current_total - data.potential_savings).toFixed(2)}€</span>
                             </div>
                             <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                                <div className="h-full bg-green-500 rounded-full" style={{ width: `${((currentTotal - potentialSavings) / (currentTotal || 1)) * 100}%` }}></div>
+                                <div className="h-full bg-green-500 rounded-full" style={{ width: `${((data.current_total - data.potential_savings) / data.current_total) * 100}%` }}></div>
                             </div>
                         </div>
                     </div>
@@ -408,7 +326,7 @@ const Dashboard = ({ data, onReset }) => {
                         Recomendaciones
                     </h3>
                     <div className="space-y-4">
-                        {recommendations.map((rec, idx) => (
+                        {data.recommendations.map((rec, idx) => (
                             <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/50 transition cursor-pointer group">
                                 <div>
                                     <p className="font-bold text-white group-hover:text-blue-400 transition">{rec.company}</p>
@@ -432,17 +350,18 @@ const Dashboard = ({ data, onReset }) => {
 // --- Main App ---
 
 const App = () => {
-    const [view, setView] = useState('landing'); // landing, upload, analyzing, results
+    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error
     const [file, setFile] = useState(null);
     const [data, setData] = useState(null);
+    const [error, setError] = useState('');
 
     const handleStart = () => setView('upload');
 
     const handleUpload = async (uploadedFile) => {
         setFile(uploadedFile);
+        setError('');
         setView('analyzing');
 
-        // Simulate API call
         const formData = new FormData();
         formData.append('file', uploadedFile);
 
@@ -453,24 +372,31 @@ const App = () => {
             });
             const result = await response.json();
 
-            // Wait for animation to finish roughly (min 4s)
+            // Wait for animation (min 4s)
             setTimeout(() => {
                 if (result.success) {
                     setData(result.data);
                     setView('results');
+                } else {
+                    // Mostrar error
+                    setError(result.error || "Error al procesar la factura");
+                    setView('error');
                 }
             }, 4000);
 
         } catch (error) {
             console.error("Error analyzing:", error);
-            // Handle error state
-            setView('upload');
+            setTimeout(() => {
+                setError("Error de conexión. Intenta de nuevo.");
+                setView('error');
+            }, 4000);
         }
     };
 
     const handleReset = () => {
         setFile(null);
         setData(null);
+        setError('');
         setView('landing');
     };
 
@@ -482,10 +408,27 @@ const App = () => {
                 {view === 'upload' && <UploadStep onUpload={handleUpload} />}
                 {view === 'analyzing' && <AnalyzingStep />}
                 {view === 'results' && <Dashboard data={data} onReset={handleReset} />}
+                {view === 'error' && (
+                    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
+                        <div className="max-w-md text-center">
+                            <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-8 mb-6">
+                                <IconAlert className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                                <h2 className="text-2xl font-bold text-white mb-3">Error al procesar</h2>
+                                <p className="text-slate-300">{error}</p>
+                            </div>
+                            <button
+                                onClick={handleReset}
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition"
+                            >
+                                Intentar de nuevo
+                            </button>
+                        </div>
+                    </div>
+                )}
             </main>
 
             <footer className="py-8 text-center text-slate-600 text-sm">
-                <p>© 2024 AnalizaMiFactura. Todos los derechos reservados.</p>
+                <p>© 2025 AnalizaMiFactura. Todos los derechos reservados.</p>
             </footer>
         </div>
     );

@@ -1,7 +1,7 @@
 import re
 from pypdf import PdfReader
-import requests
-import datetime
+from tariffs_database import TARIFAS_ELECTRICAS_ESPANA, PVPC_PROMEDIO_PENINSULA
+from esios_api import get_pvpc_price_today, estimate_consumption_from_bill, calculate_savings_with_tariff
 
 def extract_text_from_pdf(file_stream):
     """
@@ -19,129 +19,192 @@ def extract_text_from_pdf(file_stream):
 
 def find_total_amount(text):
     """
-    Busca el importe total en el texto usando expresiones regulares.
-    Busca patrones como 'Total a pagar', 'Importe', etc.
+    Busca el importe total en una factura de luz española.
+    Optimizado para facturas de Iberdrola, Endesa, Naturgy, etc.
     """
-    # Patrones comunes en facturas españolas
+    if not text:
+        return 0.0
+    
     patterns = [
-        r"Total a pagar\s*[:\.]?\s*(\d+[\.,]\d{2})",
-        r"Importe total\s*[:\.]?\s*(\d+[\.,]\d{2})",
-        r"TOTAL FACTURA\s*[:\.]?\s*(\d+[\.,]\d{2})",
-        r"(\d+[\.,]\d{2})\s*€"
+        # Iberdrola específico
+        r"TOTAL\s+IMPORTE\s+FACTURA\s*[:\.]?\s*(\d+[,\.]\d{2})\s*€",
+        r"CUOTA\s+FIJA\s+MENSUAL\s+A\s+PAGAR\s*[:\.]?\s*(\d+[,\.]\d{2})\s*€",
+        # Genéricos
+        r"Total\s+a\s+pagar\s*[:\.]?\s*(\d+[,\.]\d{2})",
+        r"Importe\s+total\s*[:\.]?\s*(\d+[,\.]\d{2})",
+        r"TOTAL\s+FACTURA\s*[:\.]?\s*(\d+[,\.]\d{2})",
+        r"Total\s+factura\s*[:\.]?\s*(\d+[,\.]\d{2})",
+        r"(\d+[,\.]\d{2})\s*€\s*$"
     ]
     
     for pattern in patterns:
-        matches = re.findall(pattern, text, re.IGNORECASE)
+        matches = re.findall(pattern, text, re.IGNORECASE | re.MULTILINE)
         if matches:
-            # Tomamos el último valor encontrado que suele ser el total final
-            # Limpiamos el string (cambiar coma por punto)
             amount_str = matches[-1].replace('.', '').replace(',', '.')
             try:
-                return float(amount_str)
+                amount = float(amount_str)
+                if 10 < amount < 1000:  # Rango realista para factura luz
+                    return amount
             except:
                 continue
     
     return 0.0
 
-def get_real_electricity_price():
+def find_consumption_kwh(text):
     """
-    Obtiene el precio medio de la luz (PVPC) del día actual en España.
-    Usa una API pública si es posible, o un fallback realista.
+    Busca el consumo en kWh en la factura.
     """
-    try:
-        # Intentamos conectar a una API pública de precios de luz
-        # ESIOS requiere token, usaremos una API wrapper pública si existe o fallback
-        # Fallback realista actualizado a Noviembre 2024 (aprox 0.12 - 0.18 €/kWh)
-        return 0.145 
-    except:
-        return 0.15
+    if not text:
+        return 0
+    
+    patterns = [
+        r"Consumo\s+en\s+el\s+per[ií]odo\s*[:\.]?\s*(\d+)\s*kWh",
+        r"Consumo\s+en\s+el\s+per[ií]odo\s*[:\.]?.*?(\d+)\s*kWh",
+        r"Energ[ií]a\s+consumida\s*[:\.]?\s*(\d+)\s*kWh",
+        r"(\d+)\s*kWh"
+    ]
+    
+    for pattern in patterns:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        if matches:
+            try:
+                kwh = int(matches[0]) if isinstance(matches[0], str) else int(matches[0][0])
+                if 10 < kwh < 10000:  # Rango realista
+                    return kwh
+            except:
+                continue
+    
+    return 0
 
-def analyze_bill_real(file_stream, bill_type, filename):
+
+def analyze_electricity_bill(file_stream, filename):
     """
-    Realiza un análisis 'real' basado en los datos extraídos.
+    Análisis REAL de facturas de luz con datos de ESIOS y tarifas reales.
     """
-    print(f"Iniciando análisis para: {filename}")
+    print(f"🔍 Iniciando análisis para: {filename}")
+    
     try:
+        # 1. Extraer texto si es PDF
         text = ""
-        # Solo intentamos leer si es PDF
         if filename.lower().endswith('.pdf'):
             try:
                 text = extract_text_from_pdf(file_stream)
-                print("Texto extraído de PDF correctamente.")
+                print(f"✅ Texto extraído ({len(text)} caracteres)")
             except Exception as e:
-                print(f"Error extrayendo texto PDF: {e}")
+                print(f"⚠️  Error extrayendo PDF: {e}")
         
         # 2. Buscar importe total
         total_amount = find_total_amount(text)
-        print(f"Importe encontrado: {total_amount}")
+        ocr_success = total_amount > 0
+        print(f"💰 Importe detectado: {total_amount}€ (OCR: {'✅' if ocr_success else '❌'})")
         
-        # Si no encontramos total (ej. es una imagen o PDF escaneado sin OCR)
-        if total_amount == 0:
-            ocr_success = False
+        # 2b. Buscar consumo en kWh (si está en la factura)
+        detected_kwh = find_consumption_kwh(text)
+        if detected_kwh > 0:
+            print(f"⚡ Consumo detectado en factura: {detected_kwh} kWh")
+        
+        # 3. Obtener precio PVPC real del día
+        pvpc_data = get_pvpc_price_today()
+        pvpc_price = pvpc_data['average']
+        print(f"⚡ Precio PVPC hoy: {pvpc_price}€/kWh")
+        
+        # 4. Estimar consumo (usar el detectado si existe, si no estimar)
+        if detected_kwh > 0:
+            estimated_kwh = detected_kwh
+            consumption_source = "real"
+        elif total_amount > 0:
+            estimated_kwh = estimate_consumption_from_bill(total_amount)
+            consumption_source = "estimado"
         else:
-            ocr_success = True
-
-        # 3. Comparativa de Mercado (Datos Reales de Ofertas 2024/2025)
-        market_offers = [
-            {"company": "Iberdrola", "plan": "Plan Online", "price_kwh": 0.11},
-            {"company": "Endesa", "plan": "Conecta", "price_kwh": 0.10},
-            {"company": "Naturgy", "plan": "Tarifa Por Uso", "price_kwh": 0.12},
-            {"company": "TotalEnergies", "plan": "A Tu Aire", "price_kwh": 0.09},
-        ]
+            estimated_kwh = 200
+            consumption_source = "default"
         
-        # Si el total es 0, usamos un valor base para calcular ofertas iniciales
-        calculation_base = total_amount if total_amount > 0 else 50.0
+        print(f"📊 Consumo {consumption_source}: {estimated_kwh} kWh")
         
-        # Estimamos consumo
-        estimated_kwh = (calculation_base * 0.6) / 0.15 
-        
+        # 5. Comparar con tarifas reales del mercado
         recommendations = []
-        best_price = calculation_base
+        best_price = total_amount if total_amount > 0 else 100
         
-        for offer in market_offers:
-            estimated_cost = (estimated_kwh * offer['price_kwh']) / 0.6 
-            if estimated_cost < calculation_base:
-                savings = calculation_base - estimated_cost
+        for tariff in TARIFAS_ELECTRICAS_ESPANA:
+            result = calculate_savings_with_tariff(
+                total_amount if total_amount > 0 else 100,
+                tariff['price_kwh'],
+                estimated_kwh
+            )
+            
+            if result['savings'] > 0:
                 recommendations.append({
-                    "company": offer['company'],
-                    "offer": offer['plan'],
-                    "price": round(estimated_cost, 2),
-                    "savings": round(savings, 2)
+                    "company": tariff['company'],
+                    "offer": tariff['plan'],
+                    "price": result['new_total'],
+                    "savings": result['savings'],
+                    "price_kwh": tariff['price_kwh'],
+                    "type": tariff['type'],
+                    "rating": tariff.get('rating', 4.0)
                 })
-                if estimated_cost < best_price:
-                    best_price = estimated_cost
-
+                
+                if result['new_total'] < best_price:
+                    best_price = result['new_total']
+        
         # Ordenar por mayor ahorro
         recommendations.sort(key=lambda x: x['savings'], reverse=True)
         
-        # Anomalías
+        # 6. Detectar anomalías en la factura
         anomalies = []
-        if "mantenimiento" in text.lower():
-            anomalies.append("Servicio de mantenimiento detectado")
-        if "potencia" in text.lower() and total_amount > 100:
-            anomalies.append("Potencia contratada alta")
+        text_lower = text.lower()
+        
+        if "mantenimiento" in text_lower or "servicio adicional" in text_lower:
+            anomalies.append("🚨 Servicios adicionales detectados (pueden ser opcionales)")
+        
+        if "potencia" in text_lower and total_amount > 80:
+            anomalies.append("⚠️  Potencia contratada elevada - Revisa si necesitas tanto")
+        
+        # Comparar con PVPC
+        if total_amount > 0:
+            precio_medio_usuario = (total_amount * 0.45) / estimated_kwh if estimated_kwh > 0 else 0.15
+            if precio_medio_usuario > pvpc_price * 1.3:
+                anomalies.append(f"💡 Estás pagando ~{round((precio_medio_usuario / pvpc_price - 1) * 100)}% más que el PVPC")
+        
         if not anomalies:
-            anomalies.append("No se detectaron anomalías graves")
-
-        print("Análisis completado con éxito.")
+            anomalies.append("✅ No se detectaron cargos sospechosos")
+        
+        # 7. Calcular puntuación (0-100)
+        if total_amount > 0:
+            # Comparamos con el precio PVPC + 20% (margen razonable comercializadora)
+            precio_objetivo = pvpc_price * estimated_kwh * 1.8  # *1.8 para incluir fijos
+            score = int(max(0, min(100, (precio_objetivo / total_amount) * 100)))
+        else:
+            score = 50
+        
+        print(f"🎯 Análisis completado - Score: {score}/100")
+        
         return {
-            "score": int(max(0, min(100, (best_price / (calculation_base if calculation_base > 0 else 1)) * 100))),
+            "score": score,
             "current_total": round(total_amount, 2),
-            "market_average": round(calculation_base * 0.9, 2),
-            "potential_savings": round(calculation_base - best_price, 2),
+            "market_average": round(pvpc_price * estimated_kwh * 1.8, 2),  # PVPC + fijos
+            "potential_savings": round(total_amount - best_price if total_amount > 0 else 0, 2),
             "anomalies": anomalies,
-            "recommendations": recommendations[:3],
-            "ocr_success": ocr_success
+            "recommendations": recommendations[:5],  # Top 5
+            "ocr_success": ocr_success,
+            "pvpc_today": pvpc_price,
+            "estimated_kwh": estimated_kwh,
+            "pvpc_api_online": pvpc_data.get('success', False)
         }
+        
     except Exception as e:
-        print(f"CRITICAL ERROR in analyze_bill_real: {e}")
-        # Return a safe fallback so the frontend doesn't hang
+        print(f"❌ ERROR CRÍTICO en análisis: {e}")
+        import traceback
+        traceback.print_exc()
+        
         return {
             "score": 0,
             "current_total": 0,
             "market_average": 0,
             "potential_savings": 0,
-            "anomalies": ["Error en análisis"],
+            "anomalies": ["⚠️  Error en el análisis. Por favor, introduce el importe manualmente."],
             "recommendations": [],
-            "ocr_success": False
+            "ocr_success": False,
+            "pvpc_today": PVPC_PROMEDIO_PENINSULA,
+            "estimated_kwh": 0
         }
+

@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import time
-import random
-from analysis_engine import analyze_bill_real
+from analysis_engine import analyze_electricity_bill
 import io
 
 app = Flask(__name__)
@@ -12,22 +11,35 @@ def index():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
-    # Simulate processing delay for UX (users trust "thinking" time more)
-    time.sleep(2)
-    
     if 'file' not in request.files:
         return jsonify({"success": False, "error": "No file uploaded"})
     
     file = request.files['file']
     if file.filename == '':
         return jsonify({"success": False, "error": "No file selected"})
+    
+    # SOLO aceptamos PDFs - rechazamos imágenes
+    if not file.filename.lower().endswith('.pdf'):
+        return jsonify({
+            "success": False, 
+            "error": "Solo aceptamos archivos PDF. Descarga tu factura en PDF desde tu compañía eléctrica."
+        })
+
+    time.sleep(1.5)
 
     # Read file into memory
     file_stream = io.BytesIO(file.read())
     
-    # Perform REAL analysis
+    # Perform REAL analysis with ESIOS API
     try:
-        analysis_result = analyze_bill_real(file_stream, request.form.get('type', 'luz'), file.filename)
+        analysis_result = analyze_electricity_bill(file_stream, file.filename)
+        
+        # Si no se detectó importe, es un error
+        if analysis_result['current_total'] == 0:
+            return jsonify({
+                "success": False,
+                "error": "No pudimos leer tu factura. Verifica que sea un PDF con texto legible."
+            })
         
         return jsonify({
             "success": True,
@@ -35,7 +47,12 @@ def analyze():
         })
     except Exception as e:
         print(f"Error in analysis: {e}")
-        return jsonify({"success": False, "error": "Error analyzing file"})
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": "Error al procesar la factura."})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    import os
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port, debug=False)
+
