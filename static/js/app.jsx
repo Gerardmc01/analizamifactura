@@ -480,10 +480,251 @@ const EmpresasPage = ({ onNavigate }) => (
     </div>
 );
 
+// --- Legal Pages ---
+
+const PrivacidadPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">Política de Privacidad</h1>
+
+        <div className="space-y-6 text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-400">Última actualización: 22 de noviembre de 2025</p>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">1. Responsable del tratamiento</h2>
+                <p><strong>Identidad:</strong> AnalizaMiFactura.com</p>
+                <p><strong>Contacto:</strong> info@analizamifactura.com</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">2. Datos que recopilamos</h2>
+                <p className="mb-3">En AnalizaMiFactura.com procesamos los siguientes datos:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li><strong>Datos de tu factura eléctrica:</strong> Importe total, consumo en kWh, fecha del período facturado.</li>
+                    <li><strong>Datos técnicos:</strong> Dirección IP (anonimizada), tipo de navegador, sistema operativo.</li>
+                    <li><strong>NO recopilamos:</strong> Nombre, DNI, dirección postal, cuenta bancaria, email (a menos que nos contactes voluntariamente).</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">3. Finalidad del tratamiento</h2>
+                <p className="mb-3">Usamos tus datos exclusivamente para:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Analizar tu factura eléctrica y calcular posibles ahorros</li>
+                    <li>Comparar tu tarifa con ofertas del mercado regulado</li>
+                    <li>Obtener el precio PVPC real desde la API de ESIOS (Red Eléctrica de España)</li>
+                    <li>Mejorar nuestro servicio mediante análisis anónimos y agregados</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">4. Base legal</h2>
+                <p>El tratamiento de tus datos se basa en:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4 mt-3">
+                    <li><strong>Consentimiento:</strong> Al usar nuestro servicio aceptas esta política</li>
+                    <li><strong>Interés legítimo:</strong> Mejorar nuestro servicio y detectar fraudes</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">5. Conservación de datos</h2>
+                <p><strong>IMPORTANTE:</strong> Tu factura se procesa <span className="text-green-400 font-bold">temporalmente</span> y se <span className="text-red-400 font-bold">elimina inmediatamente</span> tras el análisis.</p>
+                <p className="mt-3">NO almacenamos tus facturas en nuestros servidores de forma permanente.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">6. Compartir datos con terceros</h2>
+                <p className="mb-3">NO vendemos ni compartimos tus datos personales con terceros. Únicamente compartimos datos técnicos anónimos con:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li><strong>ESIOS API:</strong> Para obtener precios PVPC reales (solo consultamos, no enviamos tus datos)</li>
+                    <li><strong>Hosting (Render.com):</strong> Necesario para el funcionamiento técnico del servicio</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">7. Tus derechos (RGPD)</h2>
+                <p className="mb-3">Conforme al Reglamento General de Protección de Datos (RGPD), tienes derecho a:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li><strong>Acceso:</strong> Saber qué datos tenemos sobre ti</li>
+                    <li><strong>Rectificación:</strong> Corregir datos inexactos</li>
+                    <li><strong>Supresión:</strong> Eliminar tus datos ("derecho al olvido")</li>
+                    <li><strong>Limitación:</strong> Restringir el procesamiento</li>
+                    <li><strong>Portabilidad:</strong> Recibir tus datos en formato estructurado</li>
+                    <li><strong>Oposición:</strong> Oponerte al tratamiento</li>
+                </ul>
+                <p className="mt-4">Para ejercer estos derechos, contacta: <strong>info@analizamifactura.com</strong></p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">8. Cookies</h2>
+                <p>Consulta nuestra <button onClick={() => onNavigate('cookies')} className="text-blue-400 underline">Política de Cookies</button> para más información.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">9. Cambios en esta política</h2>
+                <p>Nos reservamos el derecho de modificar esta política. Te notificaremos de cambios significativos.</p>
+            </section>
+        </div>
+    </div>
+);
+
+const TerminosPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">Términos y Condiciones</h1>
+
+        <div className="space-y-6 text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-400">Última actualización: 22 de noviembre de 2025</p>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">1. Aceptación de los términos</h2>
+                <p>Al acceder y usar AnalizaMiFactura.com, aceptas estar sujeto a estos Términos y Condiciones.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">2. Descripción del servicio</h2>
+                <p className="mb-3">AnalizaMiFactura.com ofrece:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Análisis automático de facturas eléctricas en PDF</li>
+                    <li>Comparación con tarifas del mercado español</li>
+                    <li>Recomendaciones de ahorro basadas en datos reales del PVPC</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">3. Uso del servicio</h2>
+                <p className="mb-3">Te comprometes a:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Subir ÚNICAMENTE facturas eléctricas legítimas</li>
+                    <li>NO usar el servicio para fines ilegales o fraudulentos</li>
+                    <li>NO intentar vulnerar la seguridad del sistema</li>
+                    <li>NO hacer un uso abusivo que sobrecargue nuestros servidores</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">4. Limitación de responsabilidad</h2>
+                <div className="bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg mb-3">
+                    <p className="font-bold text-yellow-400">IMPORTANTE:</p>
+                </div>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li>Los análisis son <strong>orientativos</strong> y basados en datos públicos</li>
+                    <li>NO garantizamos la exactitud del 100% en la lectura OCR de facturas</li>
+                    <li>Las recomendaciones de ahorro son <strong>estimaciones</strong></li>
+                    <li>NO somos una compañía eléctrica ni comercializadora</li>
+                    <li>NO nos hacemos responsables de decisiones de contratación basadas en nuestro análisis</li>
+                    <li>El precio PVPC mostrado es informativo (obtenido de ESIOS)</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">5. Propiedad intelectual</h2>
+                <p>Todo el contenido de AnalizaMiFactura.com (código, diseño, textos, logos) está protegido por derechos de autor.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">6. Enlaces a terceros</h2>
+                <p>Podemos mostrar enlaces a comercializadoras eléctricas. NO somos responsables del contenido o servicios de estos sitios externos.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">7. Modificación del servicio</h2>
+                <p>Nos reservamos el derecho de modificar, suspender o discontinuar el servicio en cualquier momento sin previo aviso.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">8. Ley aplicable</h2>
+                <p>Estos términos se rigen por la legislación española. Cualquier disputa se resolverá en los tribunales de España.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">9. Contacto</h2>
+                <p>Para cualquier duda sobre estos términos: <strong>info@analizamifactura.com</strong></p>
+            </section>
+        </div>
+    </div>
+);
+
+const CookiesPage = ({ onNavigate }) => (
+    <div className="max-w-4xl mx-auto px-4 py-16 animate-slide-up">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">Política de Cookies</h1>
+
+        <div className="space-y-6 text-slate-300 leading-relaxed">
+            <p className="text-sm text-slate-400">Última actualización: 22 de noviembre de 2025</p>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">¿Qué son las cookies?</h2>
+                <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas una web. Nos ayudan a mejorar tu experiencia y analizar el uso del sitio.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">Cookies que utilizamos</h2>
+
+                <div className="space-y-4">
+                    <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg">
+                        <h3 className="font-bold text-white mb-2">🔵 Cookies técnicas (necesarias)</h3>
+                        <p className="text-sm mb-2">Esenciales para el funcionamiento de la web.</p>
+                        <ul className="list-disc list-inside text-sm ml-4">
+                            <li><strong>Sesión:</strong> Mantiene tu estado mientras navegas</li>
+                            <li><strong>Duración:</strong> Se eliminan al cerrar el navegador</li>
+                            <li><strong>Consentimiento:</strong> NO necesario (son obligatorias)</li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-green-500/10 border border-green-500/20 p-4 rounded-lg">
+                        <h3 className="font-bold text-white mb-2">🟢 Cookies analíticas (opcional)</h3>
+                        <p className="text-sm mb-2">Nos ayudan a entender cómo usas la web.</p>
+                        <ul className="list-disc list-inside text-sm ml-4">
+                            <li><strong>Proveedor:</strong> Google Analytics (si activado)</li>
+                            <li><strong>Datos:</strong> Páginas visitadas, tiempo en el sitio, navegador usado</li>
+                            <li><strong>Duración:</strong> Hasta 24 meses</li>
+                            <li><strong>Consentimiento:</strong> SÍ necesario</li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-purple-500/10 border border-purple-500/20 p-4 rounded-lg">
+                        <h3 className="font-bold text-white mb-2">🟣 Cookies de marketing (opcional)</h3>
+                        <p className="text-sm mb-2">Para mostrarte contenido relevante.</p>
+                        <ul className="list-disc list-inside text-sm ml-4">
+                            <li><strong>Proveedor:</strong> Actualmente NO usamos cookies de marketing</li>
+                            <li><strong>Futuro:</strong> Si las activamos, te pediremos consentimiento</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">Gestionar cookies</h2>
+                <p className="mb-3">Puedes controlar y eliminar cookies en cualquier momento:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li><strong>En tu navegador:</strong> Configuración → Privacidad → Cookies</li>
+                    <li><strong>Chrome:</strong> Settings → Privacy → Cookies</li>
+                    <li><strong>Firefox:</strong> Options → Privacy → Cookies</li>
+                    <li><strong>Safari:</strong> Preferences → Privacy → Cookies</li>
+                </ul>
+                <p className="mt-4 text-yellow-400 text-sm">⚠️ Bloquear cookies técnicas puede afectar al funcionamiento del sitio.</p>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">Cookies de terceros</h2>
+                <p className="mb-3">Podemos usar servicios de terceros que establecen sus propias cookies:</p>
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                    <li><strong>Google Analytics:</strong> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" className="text-blue-400 underline">Política de privacidad</a></li>
+                    <li><strong>Render.com (hosting):</strong> Cookies técnicas de servidor</li>
+                </ul>
+            </section>
+
+            <section className="glass-panel p-6 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4">Más información</h2>
+                <p>Para más detalles sobre cómo tratamos tus datos, consulta nuestra <button onClick={() => onNavigate('privacidad')} className="text-blue-400 underline">Política de Privacidad</button>.</p>
+                <p className="mt-3">Contacto: <strong>info@analizamifactura.com</strong></p>
+            </section>
+        </div>
+    </div>
+);
+
 // --- Main App ---
 
 const App = () => {
-    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error, como-funciona, seguridad, empresas
+    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error, como-funciona, seguridad, empresas, privacidad, terminos, cookies
     const [file, setFile] = useState(null);
     const [data, setData] = useState(null);
     const [error, setError] = useState('');
@@ -549,6 +790,9 @@ const App = () => {
                 {view === 'como-funciona' && <ComoFuncionaPage onNavigate={handleNavigate} onStart={handleStart} />}
                 {view === 'seguridad' && <SeguridadPage onNavigate={handleNavigate} />}
                 {view === 'empresas' && <EmpresasPage onNavigate={handleNavigate} />}
+                {view === 'privacidad' && <PrivacidadPage onNavigate={handleNavigate} />}
+                {view === 'terminos' && <TerminosPage onNavigate={handleNavigate} />}
+                {view === 'cookies' && <CookiesPage onNavigate={handleNavigate} />}
                 {view === 'error' && (
                     <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
                         <div className="max-w-md text-center">
@@ -568,8 +812,17 @@ const App = () => {
                 )}
             </main>
 
-            <footer className="py-8 text-center text-slate-600 text-sm">
-                <p>© 2025 AnalizaMiFactura. Todos los derechos reservados.</p>
+            <footer className="py-8 px-4 text-center text-slate-600 text-sm border-t border-slate-800">
+                <div className="max-w-4xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mb-4">
+                        <button onClick={() => handleNavigate('privacidad')} className="hover:text-white transition">Política de Privacidad</button>
+                        <button onClick={() => handleNavigate('terminos')} className="hover:text-white transition">Términos y Condiciones</button>
+                        <button onClick={() => handleNavigate('cookies')} className="hover:text-white transition">Cookies</button>
+                        <a href="mailto:info@analizamifactura.com" className="hover:text-white transition">Contacto</a>
+                    </div>
+                    <p>© 2025 AnalizaMiFactura.com - Todos los derechos reservados.</p>
+                    <p className="mt-2 text-xs text-slate-700">Servicio informativo independiente. No somos una comercializadora eléctrica.</p>
+                </div>
             </footer>
         </div>
     );

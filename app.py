@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import time
 from analysis_engine import analyze_electricity_bill
 import io
@@ -51,8 +51,15 @@ def analyze():
         traceback.print_exc()
         return jsonify({"success": False, "error": "Error al procesar la factura."})
 
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory('static', 'sitemap.xml')
+
+@app.route('/robots.txt')
+def robots():
+    return send_from_directory('static', 'robots.txt')
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5001))
     app.run(host='0.0.0.0', port=port, debug=False)
-
