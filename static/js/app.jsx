@@ -19,7 +19,7 @@ const IconTrendingDown = ({ className }) => (
 
 // --- Components ---
 
-const Navbar = ({ onNavigate, onStart }) => (
+const Navbar = ({ onNavigate, onStart, hasHistory }) => (
     <nav className="flex items-center justify-between px-4 md:px-6 py-4 glass-panel sticky top-0 z-50">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('landing')}>
             <div className="bg-blue-500 p-1.5 rounded-lg">
@@ -31,6 +31,9 @@ const Navbar = ({ onNavigate, onStart }) => (
             <button onClick={() => onNavigate('como-funciona')} className="hover:text-white transition">Cómo funciona</button>
             <button onClick={() => onNavigate('seguridad')} className="hover:text-white transition">Seguridad</button>
             <button onClick={() => onNavigate('empresas')} className="hover:text-white transition">Empresas</button>
+            {hasHistory && (
+                <button onClick={() => onNavigate('history')} className="hover:text-white transition text-green-400">📊 Histórico</button>
+            )}
         </div>
         <button onClick={onStart} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition">
             Analizar Factura
@@ -721,13 +724,180 @@ const CookiesPage = ({ onNavigate }) => (
     </div>
 );
 
+// --- History & Simulator Page ---
+
+const HistoryPage = ({ userId, onNavigate }) => {
+    const [loading, setLoading] = React.useState(true);
+    const [facturas, setFacturas] = React.useState([]);
+    const [projection, setProjection] = React.useState(null);
+
+    React.useEffect(() => {
+        if (userId) {
+            fetchHistory();
+        }
+    }, [userId]);
+
+    const fetchHistory = async () => {
+        try {
+            const response = await fetch(`/api/history/${userId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                setFacturas(result.facturas);
+                setProjection(result.projection);
+            }
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            setLoading(false);
+        }
+    };
+
+    if (!userId) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+                <h1 className="text-3xl font-bold mb-4">Histórico de Facturas</h1>
+                <p className="text-slate-400 mb-6">Analiza una factura primero para ver tu histórico.</p>
+                <button onClick={() => onNavigate('upload')} className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition">
+                    Analizar Factura
+                </button>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+                <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-slate-400">Cargando histórico...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-6xl mx-auto px-4 py-16 animate-slide-up">
+            <div className="mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">Tu Histórico de Facturas</h1>
+                <p className="text-slate-400">Análisis de tus últimas {facturas.length} facturas</p>
+            </div>
+
+            {/* Projection Summary */}
+            {projection && projection.num_facturas > 0 && (
+                <div className="grid md:grid-cols-4 gap-4 mb-8">
+                    <div className="glass-panel p-6 rounded-2xl">
+                        <div className="text-slate-400 text-sm mb-2">Ahorro Mensual Promedio</div>
+                        <div className="text-3xl font-bold text-green-400">{projection.ahorro_mensual_promedio}€</div>
+                    </div>
+                    <div className="glass-panel p-6 rounded-2xl">
+                        <div className="text-slate-400 text-sm mb-2">Ahorro Anual Estimado</div>
+                        <div className="text-3xl font-bold text-blue-400">{projection.ahorro_anual_estimado}€</div>
+                    </div>
+                    <div className="glass-panel p-6 rounded-2xl">
+                        <div className="text-slate-400 text-sm mb-2">Total Gastado</div>
+                        <div className="text-3xl font-bold text-white">{projection.total_gastado}€</div>
+                    </div>
+                    <div className="glass-panel p-6 rounded-2xl">
+                        <div className="text-slate-400 text-sm mb-2">Facturas Analizadas</div>
+                        <div className="text-3xl font-bold text-purple-400">{projection.num_facturas}</div>
+                    </div>
+                </div>
+            )}
+
+            {/* Savings Simulator */}
+            {projection && projection.ahorro_anual_estimado > 0 && (
+                <div className="glass-panel p-8 rounded-2xl mb-8 bg-gradient-to-br from-green-500/10 to-blue-500/10 border-green-500/20">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-3">
+                        <span className="text-3xl">💰</span>
+                        Simulador de Ahorro
+                    </h2>
+                    <p className="text-slate-300 mb-6">
+                        Si cambias a la mejor tarifa disponible, así ahorrarías:
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="text-center p-4 bg-white/5 rounded-xl">
+                            <div className="text-sm text-slate-400 mb-1">En 6 meses</div>
+                            <div className="text-2xl font-bold text-green-400">{(projection.ahorro_anual_estimado / 2).toFixed(2)}€</div>
+                        </div>
+                        <div className="text-center p-4 bg-white/5 rounded-xl">
+                            <div className="text-sm text-slate-400 mb-1">En 1 año</div>
+                            <div className="text-3xl font-bold text-green-400">{projection.ahorro_anual_estimado}€</div>
+                        </div>
+                        <div className="text-center p-4 bg-white/5 rounded-xl">
+                            <div className="text-sm text-slate-400 mb-1">En 3 años</div>
+                            <div className="text-2xl font-bold text-green-400">{(projection.ahorro_anual_estimado * 3).toFixed(2)}€</div>
+                        </div>
+                    </div>
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-slate-400">💡 Eso equivale a {Math.round(projection.ahorro_anual_estimado / 50)} cenas en un restaurante</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Facturas List */}
+            <div className="space-y-4">
+                <h2 className="text-2xl font-bold mb-4">Facturas Analizadas</h2>
+                {facturas.length === 0 ? (
+                    <div className="glass-panel p-8 rounded-2xl text-center">
+                        <p className="text-slate-400">No hay facturas en tu histórico todavía.</p>
+                        <button onClick={() => onNavigate('upload')} className="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition">
+                            Analizar Primera Factura
+                        </button>
+                    </div>
+                ) : (
+                    facturas.map((factura, index) => (
+                        <div key={factura.id} className="glass-panel p-6 rounded-2xl hover:bg-white/5 transition">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex-grow">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className="text-2xl font-bold text-white">{factura.importe_total}€</span>
+                                        <span className="text-sm text-slate-400">
+                                            {new Date(factura.created_at).toLocaleDateString('es-ES', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
+                                            })}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-wrap gap-3 text-sm">
+                                        <span className="text-slate-400">⚡ {factura.consumo_kwh} kWh</span>
+                                        <span className="text-slate-400">📊 PVPC: {factura.pvpc_precio}€/kWh</span>
+                                        <span className="text-slate-400">🎯 Score: {factura.puntuacion}/100</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    {factura.ahorro_potencial > 0 && (
+                                        <div className="text-right">
+                                            <div className="text-xs text-slate-400 mb-1">Ahorro potencial</div>
+                                            <div className="text-xl font-bold text-green-400">-{factura.ahorro_potencial}€</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            <div className="mt-8 text-center">
+                <button onClick={() => onNavigate('upload')} className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition">
+                    Analizar Nueva Factura
+                </button>
+            </div>
+        </div>
+    );
+};
+
 // --- Main App ---
 
 const App = () => {
-    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error, como-funciona, seguridad, empresas, privacidad, terminos, cookies
+    const [view, setView] = useState('landing'); // landing, upload, analyzing, results, error, como-funciona, seguridad, empresas, privacidad, terminos, cookies, history
     const [file, setFile] = useState(null);
     const [data, setData] = useState(null);
     const [error, setError] = useState('');
+    const [userId, setUserId] = useState(() => {
+        // Get userId from localStorage or null
+        return localStorage.getItem('analizamifactura_userId') || null;
+    });
 
     const handleNavigate = (page) => {
         setView(page);
@@ -744,6 +914,11 @@ const App = () => {
         const formData = new FormData();
         formData.append('file', uploadedFile);
 
+        // Include userId if exists
+        if (userId) {
+            formData.append('user_id', userId);
+        }
+
         try {
             const response = await fetch('/api/analyze', {
                 method: 'POST',
@@ -755,6 +930,13 @@ const App = () => {
             setTimeout(() => {
                 if (result.success) {
                     setData(result.data);
+
+                    // Save userId to state and localStorage
+                    if (result.data.user_id) {
+                        setUserId(result.data.user_id);
+                        localStorage.setItem('analizamifactura_userId', result.data.user_id);
+                    }
+
                     setView('results');
                 } else {
                     // Mostrar error
@@ -781,7 +963,7 @@ const App = () => {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar onNavigate={handleNavigate} onStart={handleStart} />
+            <Navbar onNavigate={handleNavigate} onStart={handleStart} hasHistory={!!userId} />
             <main className="flex-grow relative">
                 {view === 'landing' && <Hero onStart={handleStart} />}
                 {view === 'upload' && <UploadStep onUpload={handleUpload} />}
@@ -793,6 +975,7 @@ const App = () => {
                 {view === 'privacidad' && <PrivacidadPage onNavigate={handleNavigate} />}
                 {view === 'terminos' && <TerminosPage onNavigate={handleNavigate} />}
                 {view === 'cookies' && <CookiesPage onNavigate={handleNavigate} />}
+                {view === 'history' && <HistoryPage userId={userId} onNavigate={handleNavigate} />}
                 {view === 'error' && (
                     <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
                         <div className="max-w-md text-center">
