@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import time
 from analysis_engine import analyze_electricity_bill
 import io
+import traceback
+from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id
 
 app = Flask(__name__)
 
@@ -11,45 +13,70 @@ def index():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze():
-    if 'file' not in request.files:
-        return jsonify({"success": False, "error": "No file uploaded"})
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"success": False, "error": "No file selected"})
-    
-    # SOLO aceptamos PDFs - rechazamos imágenes
-    if not file.filename.lower().endswith('.pdf'):
-        return jsonify({
-            "success": False, 
-            "error": "Solo aceptamos archivos PDF. Descarga tu factura en PDF desde tu compañía eléctrica."
-        })
-
-    time.sleep(1.5)
-
-    # Read file into memory
-    file_stream = io.BytesIO(file.read())
-    
-    # Perform REAL analysis with ESIOS API
     try:
-        analysis_result = analyze_electricity_bill(file_stream, file.filename)
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "No se ha enviado ningún archivo."})
         
-        # Si no se detectó importe, es un error
-        if analysis_result['current_total'] == 0:
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"success": False, "error": "No se ha seleccionado ningún archivo."})
+        
+        # Verificar que sea PDF
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({
+                "success": False, 
+                "error": "Solo aceptamos archivos PDF. Por favor, descarga tu factura en formato PDF desde la web de tu compañía."
+            })
+        
+        # Leer archivo
+        file_bytes = file.read()
+        file_stream = io.BytesIO(file_bytes)
+        
+        # Analizar factura
+        result = analyze_electricity_bill(file_stream, file.filename)
+        
+        # Verificar que se haya detectado el importe
+        if result['current_total'] == 0:
             return jsonify({
                 "success": False,
-                "error": "No pudimos leer tu factura. Verifica que sea un PDF con texto legible."
+                "error": "No pudimos leer tu factura. Verifica que sea un PDF con texto legible (no una imagen escaneada)."
             })
+        
+        # Obtener o crear user_id
+        user_id = request.form.get('user_id')
+        if not user_id:
+            user_id = generate_user_id()
+        
+        # Guardar en Supabase
+        factura_id = save_factura(user_id, result)
+        
+        # Añadir user_id y factura_id a la respuesta
+        result['user_id'] = user_id
+        result['factura_id'] = factura_id
+        
+        return jsonify({"success": True, "data": result})
+        
+    except Exception as e:
+        print(f"Error processing bill: {e}")
+        traceback.print_exc()
+        return jsonify({"success": False, "error": "Error al procesar la factura."})
+
+@app.route('/api/history/<user_id>', methods=['GET'])
+def get_history(user_id):
+    """Obtiene el histórico de facturas de un usuario"""
+    try:
+        facturas = get_user_facturas(user_id, limit=12)
+        projection = calculate_savings_projection(facturas)
         
         return jsonify({
             "success": True,
-            "data": analysis_result
+            "facturas": facturas,
+            "projection": projection
         })
     except Exception as e:
-        print(f"Error in analysis: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({"success": False, "error": "Error al procesar la factura."})
+        print(f"Error getting history: {e}")
+        return jsonify({"success": False, "error": "Error al obtener el histórico."})
 
 @app.route('/sitemap.xml')
 def sitemap():
