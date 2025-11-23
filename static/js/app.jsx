@@ -913,7 +913,7 @@ const HistoryPage = ({ userId, onNavigate }) => {
     return (
         <div className="max-w-6xl mx-auto px-4 py-16 animate-slide-up">
             <div className="mb-8">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">Tu Histórico de Facturas</h1>
+                <h1 className="text-4xl md::text-5xl font-bold mb-4">Tu Histórico de Facturas</h1>
                 <p className="text-slate-400">Análisis de tus últimas {facturas.length} facturas</p>
             </div>
 
