@@ -1,17 +1,46 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, make_response
 import time
 from analysis_engine import analyze_electricity_bill
 import io
 import traceback
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.utils import secure_filename
+
 # from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id
 
 app = Flask(__name__)
+
+# 🛡️ SECURITY: Rate Limiting
+# Limit requests to prevent abuse (DDoS / Spam)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
+
+# 🛡️ SECURITY: HTTP Headers
+@app.after_request
+def add_security_headers(response):
+    # Prevent Clickjacking
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # Prevent MIME Sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Enable XSS Protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Strict Transport Security (Force HTTPS)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/api/analyze', methods=['POST'])
+@limiter.limit("5 per minute")  # 🛡️ SECURITY: Max 5 uploads per minute per IP
 def analyze():
     try:
         if 'file' not in request.files:
@@ -22,8 +51,11 @@ def analyze():
         if file.filename == '':
             return jsonify({"success": False, "error": "No se ha seleccionado ningún archivo."})
         
+        # 🛡️ SECURITY: Sanitize filename
+        filename = secure_filename(file.filename)
+        
         # Verificar que sea PDF
-        if not file.filename.lower().endswith('.pdf'):
+        if not filename.lower().endswith('.pdf'):
             return jsonify({
                 "success": False, 
                 "error": "Solo aceptamos archivos PDF. Por favor, descarga tu factura en formato PDF desde la web de tu compañía."
