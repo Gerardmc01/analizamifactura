@@ -3,7 +3,7 @@ import time
 from analysis_engine import analyze_electricity_bill
 import io
 import traceback
-from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id
+# from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id
 
 app = Flask(__name__)
 
@@ -45,15 +45,16 @@ def analyze():
         
         # Obtener o crear user_id
         user_id = request.form.get('user_id')
-        if not user_id:
-            user_id = generate_user_id()
+        # if not user_id:
+        #     user_id = generate_user_id()
         
-        # Guardar en Supabase
-        factura_id = save_factura(user_id, result)
+        # Guardar en Supabase (DISABLED)
+        # factura_id = save_factura(user_id, result)
         
         # Añadir user_id y factura_id a la respuesta
-        result['user_id'] = user_id
-        result['factura_id'] = factura_id
+        if user_id:
+            result['user_id'] = user_id
+        # result['factura_id'] = factura_id
         
         return jsonify({"success": True, "data": result})
         
@@ -66,13 +67,20 @@ def analyze():
 def get_history(user_id):
     """Obtiene el histórico de facturas de un usuario"""
     try:
-        facturas = get_user_facturas(user_id, limit=12)
-        projection = calculate_savings_projection(facturas)
+        # facturas = get_user_facturas(user_id, limit=12)
+        # projection = calculate_savings_projection(facturas)
         
+        # Mock data for now
         return jsonify({
             "success": True,
-            "facturas": facturas,
-            "projection": projection
+            "facturas": [],
+            "projection": {
+                "ahorro_mensual_promedio": 0,
+                "ahorro_anual_estimado": 0,
+                "total_gastado": 0,
+                "total_potencial_ahorrado": 0,
+                "num_facturas": 0
+            }
         })
     except Exception as e:
         print(f"Error getting history: {e}")
