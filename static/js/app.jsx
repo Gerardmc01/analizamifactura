@@ -1,5 +1,5 @@
 const { useState, useEffect, useRef } = React;
-const { Zap, Upload, FileText, CheckCircle, AlertTriangle, ArrowRight, BarChart3, Shield, Lock, Menu, X, ChevronDown, ChevronUp } = lucide;
+
 
 // --- Components ---
 
