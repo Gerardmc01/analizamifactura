@@ -78,6 +78,24 @@ def get_history(user_id):
         print(f"Error getting history: {e}")
         return jsonify({"success": False, "error": "Error al obtener el histórico."})
 
+@app.route('/blog')
+def blog_index():
+    """Blog listing page"""
+    from blog_posts import get_all_blog_posts
+    posts = get_all_blog_posts()
+    return render_template('blog_index.html', posts=posts)
+
+@app.route('/blog/<slug>')
+def blog_post(slug):
+    """Individual blog post"""
+    from blog_posts import get_blog_post
+    post = get_blog_post(slug)
+    
+    if not post:
+        return "Post not found", 404
+    
+    return render_template('blog_post.html', post=post, slug=slug)
+
 @app.route('/sitemap.xml')
 def sitemap():
     return send_from_directory('static', 'sitemap.xml')

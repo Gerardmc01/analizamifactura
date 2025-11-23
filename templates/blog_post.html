@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>{{ post.title }}</title>
+    <meta name="description" content="{{ post.meta_description }}">
+    <meta name="keywords" content="{{ post.keywords }}">
+    <meta name="author" content="{{ post.author }}">
+    <link rel="canonical" href="https://analizamifactura.onrender.com/blog/{{ slug }}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ post.title }}">
+    <meta property="og:description" content="{{ post.meta_description }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://analizamifactura.onrender.com/blog/{{ slug }}">
+    <meta property="article:published_time" content="{{ post.date }}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+
+    <!-- Schema.org Article markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "{{ post.title }}",
+      "description": "{{ post.meta_description }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ post.author }}"
+      },
+      "datePublished": "{{ post.date }}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AnalizaMiFactura",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://analizamifactura.onrender.com/static/favicon.png"
+        }
+      }
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between px-6 py-4 glass-panel sticky top-0 z-50">
+        <a href="/" class="flex items-center gap-2">
+            <div class="bg-blue-500 p-1.5 rounded-lg">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" />
+                </svg>
+            </div>
+            <span class="text-xl font-bold">AnalizaMiFactura</span>
+        </a>
+        <a href="/"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition">
+            Analizar Factura
+        </a>
+    </nav>
+
+    <!-- Blog Content -->
+    <main>
+        {{ post.content | safe }}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 text-center text-slate-600 text-sm border-t border-slate-800 mt-16">
+        <div class="max-w-4xl mx-auto">
+            <p>© 2025 AnalizaMiFactura.com - Blog de Ahorro en Electricidad</p>
+            <div class="mt-4 flex justify-center gap-6">
+                <a href="/" class="hover:text-white transition">Inicio</a>
+                <a href="/blog" class="hover:text-white transition">Blog</a>
+                <a href="/privacidad" class="hover:text-white transition">Privacidad</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
