@@ -94,7 +94,9 @@ def blog_post(slug):
     if not post:
         return "Post not found", 404
     
-    return render_template('blog_post.html', post=post, slug=slug)
+    # Use specific template for this post
+    template_name = post.get('template', 'blog_post.html')
+    return render_template(template_name, post=post, slug=slug)
 
 @app.route('/sitemap.xml')
 def sitemap():
