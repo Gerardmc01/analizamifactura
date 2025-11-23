@@ -7,7 +7,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
 
-from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id
+from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id, save_subscriber
 
 app = Flask(__name__)
 
@@ -21,6 +21,27 @@ limiter = Limiter(
 )
 
 # ... (security headers code remains same) ...
+
+@app.route('/api/subscribe', methods=['POST'])
+@limiter.limit("5 per hour") # Prevent spam
+def subscribe():
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email or '@' not in email:
+            return jsonify({"success": False, "error": "Email inválido"})
+            
+        success = save_subscriber(email)
+        
+        if success:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": "Error al guardar"})
+            
+    except Exception as e:
+        print(f"Error subscribing: {e}")
+        return jsonify({"success": False, "error": "Error del servidor"})
 
 @app.route('/api/analyze', methods=['POST'])
 @limiter.limit("5 per minute")  # 🛡️ SECURITY: Max 5 uploads per minute per IP

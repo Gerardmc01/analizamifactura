@@ -99,5 +99,31 @@ def calculate_savings_projection(facturas: list) -> dict:
         "num_facturas": len(facturas)
     }
 
+
+def save_subscriber(email: str) -> bool:
+    """Guarda un nuevo suscriptor en Supabase."""
+    try:
+        data = {
+            "email": email,
+            "created_at": datetime.utcnow().isoformat(),
+            "source": "web_capture"
+        }
+        
+        url = f"{SUPABASE_URL}/rest/v1/subscribers"
+        response = requests.post(url, headers=HEADERS, json=data)
+        
+        if response.status_code in [200, 201]:
+            print(f"✅ Nuevo suscriptor: {email}")
+            return True
+        elif response.status_code == 409: # Conflict (ya existe)
+            print(f"ℹ️ Suscriptor ya existe: {email}")
+            return True
+            
+        print(f"❌ Error guardando suscriptor: {response.text}")
+        return False
+    except Exception as e:
+        print(f"❌ Error crítico en save_subscriber: {e}")
+        return False
+
 def generate_user_id() -> str:
     return str(uuid.uuid4())

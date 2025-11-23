@@ -556,6 +556,69 @@ const EmpresasPage = ({ onNavigate }) => (
     </div>
 );
 
+const EmailCapture = () => {
+    const [email, setEmail] = React.useState('');
+    const [sent, setSent] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                setSent(true);
+                setTimeout(() => setEmail(''), 2000);
+            }
+        } catch (error) {
+            console.error("Error subscribing:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (sent) {
+        return (
+            <div className="glass-panel p-8 rounded-2xl text-center bg-green-500/10 border-green-500/20">
+                <div className="text-4xl mb-4">✅</div>
+                <h3 className="text-xl font-bold text-white mb-2">¡Suscrito correctamente!</h3>
+                <p className="text-slate-300">Te avisaremos cuando baje el precio de la luz.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="glass-panel p-8 rounded-2xl text-center">
+            <h3 className="text-xl font-bold text-white mb-4">🔔 Alertas de Precio</h3>
+            <p className="text-slate-300 mb-6">¿Quieres saber cuándo la luz es GRATIS? Déjanos tu email.</p>
+            <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
+                <input
+                    type="email"
+                    placeholder="tu@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                    disabled={loading}
+                />
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition disabled:opacity-50"
+                >
+                    {loading ? '...' : 'Suscribirme'}
+                </button>
+            </form>
+        </div>
+    );
+};
+
 // --- Legal Pages ---
 
 const PrivacidadPage = ({ onNavigate }) => (
