@@ -1,0 +1,57 @@
+{% extends "blog_base.html" %}
+
+{% block content %}
+<article class="max-w-4xl mx-auto px-4 py-16">
+    <h1 class="text-4xl md:text-5xl font-bold mb-6">PVPC vs Tarifa Fija: ¿Cuál Te Conviene Más? [Guía 2025]</h1>
+
+    <div class="text-slate-400 mb-8">
+        <span>Actualizado: 23 de noviembre de 2025</span> • <span>Lectura: 7 min</span>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="glass-panel p-8 rounded-2xl border-t-4 border-blue-500">
+            <h2 class="text-2xl font-bold mb-4 text-blue-400">Tarifa Fija (Mercado Libre)</h2>
+            <ul class="space-y-3 text-slate-300">
+                <li class="flex items-start gap-2">✅ <span>Sabes siempre cuánto vas a pagar</span></li>
+                <li class="flex items-start gap-2">✅ <span>Sin sorpresas por subidas del mercado</span></li>
+                <li class="flex items-start gap-2">❌ <span>Suele ser más cara a largo plazo</span></li>
+                <li class="flex items-start gap-2">❌ <span>Suelen tener permanencia</span></li>
+            </ul>
+        </div>
+
+        <div class="glass-panel p-8 rounded-2xl border-t-4 border-green-500">
+            <h2 class="text-2xl font-bold mb-4 text-green-400">PVPC (Mercado Regulado)</h2>
+            <ul class="space-y-3 text-slate-300">
+                <li class="flex items-start gap-2">✅ <span>Precio real de coste (sin márgenes extra)</span></li>
+                <li class="flex items-start gap-2">✅ <span>Sin permanencia nunca</span></li>
+                <li class="flex items-start gap-2">❌ <span>El precio cambia cada hora</span></li>
+                <li class="flex items-start gap-2">❌ <span>Incertidumbre si hay crisis energética</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="glass-panel p-8 rounded-2xl mb-8">
+        <h2 class="text-2xl font-bold mb-4">El Veredicto Final</h2>
+        <p class="text-slate-300 leading-relaxed mb-4">
+            Históricamente, el <strong>PVPC ha sido más barato</strong> en el 80% de los meses.
+            Sin embargo, las tarifas fijas ofrecen tranquilidad mental.
+        </p>
+        <p class="text-slate-300 leading-relaxed">
+            Si puedes poner lavadoras los fines de semana o por la mañana, el PVPC es imbatible.
+            Si prefieres despreocuparte totalmente y pagar lo mismo uses la luz a la hora que la uses,
+            busca una buena tarifa fija.
+        </p>
+    </div>
+
+    <div class="glass-panel p-8 rounded-2xl mb-8 bg-purple-500/10 border-purple-500/20 text-center">
+        <h2 class="text-2xl font-bold mb-4">¿Dudas? Deja que los números decidan</h2>
+        <p class="text-slate-300 mb-6">
+            Sube tu última factura y te diremos si estás pagando de más con tu tarifa actual.
+        </p>
+        <a href="/"
+            class="inline-block px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition">
+            Hacer Auditoría Gratuita →
+        </a>
+    </div>
+</article>
+{% endblock %}
