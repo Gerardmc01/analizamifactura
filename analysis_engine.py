@@ -180,7 +180,8 @@ def analyze_electricity_bill(file_stream, filename):
                     "savings": result['savings'],
                     "price_kwh": tariff['price_kwh'],
                     "type": tariff['type'],
-                    "rating": tariff.get('rating', 4.0)
+                    "rating": tariff.get('rating', 4.0),
+                    "affiliate_link": tariff.get('affiliate_link', '#')
                 })
                 
                 if result['new_total'] < best_price:

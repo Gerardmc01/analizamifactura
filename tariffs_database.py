@@ -8,10 +8,11 @@ TARIFAS_ELECTRICAS_ESPANA = [
     {
         "company": "Endesa",
         "plan": "Conecta Luz",
-        "price_kwh": 0.1039,  # €/kWh con impuestos
+        "price_kwh": 0.1039,
         "type": "fijo_24h",
         "permanencia": False,
-        "rating": 4.5
+        "rating": 4.5,
+        "affiliate_link": "https://www.endesa.com/es/luz-y-gas/luz/tarifa-conecta"
     },
     {
         "company": "Iberdrola",
@@ -19,33 +20,37 @@ TARIFAS_ELECTRICAS_ESPANA = [
         "price_kwh": 0.12,
         "type": "fijo_24h",
         "permanencia": False,
-        "rating": 4.3
+        "rating": 4.3,
+        "affiliate_link": "https://www.iberdrola.es/luz/plan-online"
     },
     {
         "company": "Iberdrola",
         "plan": "Plan Online 3 Periodos",
-        "price_kwh": 0.12,  # Promedio ponderado (valle 0.09, llano 0.12, punta 0.18)
+        "price_kwh": 0.12,
         "type": "discriminacion_horaria",
         "permanencia": False,
         "rating": 4.4,
-        "detail": "Valle: 0.09€ | Llano: 0.12€ | Punta: 0.18€"
+        "detail": "Valle: 0.09€ | Llano: 0.12€ | Punta: 0.18€",
+        "affiliate_link": "https://www.iberdrola.es/luz/plan-online-3-periodos"
     },
     {
         "company": "Naturgy",
         "plan": "Tarifa Por Uso",
         "price_kwh": 0.1192,
         "type": "fijo_24h",
-        "permanencia": 12,  # meses
-        "rating": 4.2
+        "permanencia": 12,
+        "rating": 4.2,
+        "affiliate_link": "https://www.naturgy.es/hogar/luz/tarifa_por_uso_luz"
     },
     {
         "company": "Naturgy",
         "plan": "Tarifa Noche",
-        "price_kwh": 0.0823,  # Solo valle, muy competitivo
+        "price_kwh": 0.0823,
         "type": "discriminacion_horaria",
         "permanencia": 12,
         "rating": 4.6,
-        "detail": "Precio nocturno (valle): 0.0823€"
+        "detail": "Precio nocturno (valle): 0.0823€",
+        "affiliate_link": "https://www.naturgy.es/hogar/luz/tarifa_noche_luz"
     },
     {
         "company": "Repsol",
@@ -53,7 +58,8 @@ TARIFAS_ELECTRICAS_ESPANA = [
         "price_kwh": 0.11,
         "type": "fijo_24h",
         "permanencia": False,
-        "rating": 4.1
+        "rating": 4.1,
+        "affiliate_link": "https://www.repsol.es/particulares/luz-y-gas/tarifas-luz/"
     },
     {
         "company": "TotalEnergies",
@@ -61,7 +67,8 @@ TARIFAS_ELECTRICAS_ESPANA = [
         "price_kwh": 0.10,
         "type": "fijo_24h",
         "permanencia": False,
-        "rating": 4.4
+        "rating": 4.4,
+        "affiliate_link": "https://www.totalenergies.es/es/hogares/tarifas-luz/a-tu-aire-luz"
     },
     {
         "company": "Octopus Energy",
@@ -69,7 +76,8 @@ TARIFAS_ELECTRICAS_ESPANA = [
         "price_kwh": 0.105,
         "type": "fijo_24h",
         "permanencia": False,
-        "rating": 4.7
+        "rating": 4.7,
+        "affiliate_link": "https://octopusenergy.es/tarifas"
     }
 ]
 
