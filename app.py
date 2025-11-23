@@ -6,7 +6,6 @@ import traceback
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.utils import secure_filename
-
 from supabase_db import save_factura, get_user_facturas, calculate_savings_projection, generate_user_id, save_subscriber
 
 app = Flask(__name__)
@@ -20,7 +19,24 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# ... (security headers code remains same) ...
+# 🛡️ SECURITY: HTTP Headers
+@app.after_request
+def add_security_headers(response):
+    # Prevent Clickjacking
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # Prevent MIME Sniffing
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # Enable XSS Protection
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    # Strict Transport Security (Force HTTPS)
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # Referrer Policy
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/api/subscribe', methods=['POST'])
 @limiter.limit("5 per hour") # Prevent spam
@@ -47,10 +63,30 @@ def subscribe():
 @limiter.limit("5 per minute")  # 🛡️ SECURITY: Max 5 uploads per minute per IP
 def analyze():
     try:
-        # ... (file validation code remains same) ...
+        if 'file' not in request.files:
+            return jsonify({"success": False, "error": "No se ha enviado ningún archivo."})
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"success": False, "error": "No se ha seleccionado ningún archivo."})
+        
+        # 🛡️ SECURITY: Sanitize filename
+        filename = secure_filename(file.filename)
+        
+        # Verificar que sea PDF
+        if not filename.lower().endswith('.pdf'):
+            return jsonify({
+                "success": False, 
+                "error": "Solo aceptamos archivos PDF. Por favor, descarga tu factura en formato PDF desde la web de tu compañía."
+            })
+        
+        # Leer archivo
+        file_bytes = file.read()
+        file_stream = io.BytesIO(file_bytes)
         
         # Analizar factura
-        result = analyze_electricity_bill(file_stream, file.filename)
+        result = analyze_electricity_bill(file_stream, filename)
         
         # Verificar que se haya detectado el importe
         if result['current_total'] == 0:
@@ -117,6 +153,21 @@ def sitemap():
 @app.route('/robots.txt')
 def robots():
     return send_from_directory('static', 'robots.txt')
+
+# Static pages
+@app.route('/como-funciona')
+def como_funciona(): return render_template('index.html')
+@app.route('/seguridad')
+def seguridad(): return render_template('index.html')
+@app.route('/empresas')
+def empresas(): return render_template('index.html')
+@app.route('/privacidad')
+def privacidad(): return render_template('index.html')
+@app.route('/terminos')
+def terminos(): return render_template('index.html')
+@app.route('/cookies')
+def cookies(): return render_template('index.html')
+
 
 if __name__ == '__main__':
     import os
