@@ -1080,6 +1080,7 @@ const App = () => {
                     <p className="mt-2 text-xs text-slate-700">Servicio informativo independiente. No somos una comercializadora eléctrica.</p>
                 </div>
             </footer>
+            <CookieBanner />
         </div>
     );
 };
