@@ -78,25 +78,22 @@ def get_history(user_id):
         print(f"Error getting history: {e}")
         return jsonify({"success": False, "error": "Error al obtener el histórico."})
 
-@app.route('/blog')
-def blog_index():
-    """Blog listing page"""
-    from blog_posts import get_all_blog_posts
-    posts = get_all_blog_posts()
-    return render_template('blog_index.html', posts=posts)
+# Blog routes temporarily disabled for stable deploy
+# Will re-enable after confirming SEO changes work
+# @app.route('/blog')
+# def blog_index():
+#     from blog_posts import get_all_blog_posts
+#     posts = get_all_blog_posts()
+#     return render_template('blog_index.html', posts=posts)
 
-@app.route('/blog/<slug>')
-def blog_post(slug):
-    """Individual blog post"""
-    from blog_posts import get_blog_post
-    post = get_blog_post(slug)
-    
-    if not post:
-        return "Post not found", 404
-    
-    # Use specific template for this post
-    template_name = post.get('template', 'blog_post.html')
-    return render_template(template_name, post=post, slug=slug)
+# @app.route('/blog/<slug>')
+# def blog_post(slug):
+#     from blog_posts import get_blog_post
+#     post = get_blog_post(slug)
+#     if not post:
+#         return "Post not found", 404
+#     template_name = post.get('template', 'blog_post.html')
+#     return render_template(template_name, post=post, slug=slug)
 
 @app.route('/sitemap.xml')
 def sitemap():

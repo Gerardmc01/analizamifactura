@@ -28,7 +28,6 @@ const Navbar = ({ onNavigate, onStart, hasHistory }) => (
             <span className="text-lg md:text-xl font-bold tracking-tight">AnalizaMiFactura</span>
         </div>
         <div className="hidden md:flex gap-6 text-sm font-medium text-slate-300">
-            <a href="/blog" className="hover:text-white transition">Blog</a>
             <button onClick={() => onNavigate('como-funciona')} className="hover:text-white transition">Cómo funciona</button>
             <button onClick={() => onNavigate('seguridad')} className="hover:text-white transition">Seguridad</button>
             <button onClick={() => onNavigate('empresas')} className="hover:text-white transition">Empresas</button>
