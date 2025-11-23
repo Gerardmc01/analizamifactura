@@ -89,6 +89,78 @@ const Hero = ({ onStart }) => (
                 </div>
             </div>
         </div>
+
+        {/* SEO Content Section */}
+        <div className="mt-16 max-w-5xl mx-auto px-4">
+            <div className="glass-panel p-8 md:p-12 rounded-2xl">
+                <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">¿Por Qué Comparar Tu Tarifa de Luz con AnalizaMiFactura?</h2>
+                <div className="grid md:grid-cols-2 gap-8 text-slate-300 leading-relaxed">
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-3">Ahorra en Tu Factura Eléctrica de Forma Real</h3>
+                        <p>En España, el <strong>precio de la luz</strong> varía constantemente según el <strong>PVPC</strong> (Precio Voluntario para el Pequeño Consumidor). Muchas familias pagan más de lo necesario sin saberlo. Nuestro <strong>comparador de tarifas eléctricas</strong> analiza tu factura de <strong>Iberdrola, Endesa, Naturgy, Repsol o cualquier compañía</strong> y te muestra exactamente cuánto podrías ahorrar.</p>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-3">Datos Reales del Mercado Español</h3>
+                        <p>No usamos estimaciones. Conectamos directamente con la API de <strong>ESIOS</strong> (Red Eléctrica de España) para obtener el <strong>precio de la luz en tiempo real</strong>. Comparamos tu consumo actual con las mejores ofertas del mercado regulado y libre, mostrándote el ahorro potencial con cada tarifa disponible en la <strong>Península Ibérica</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Benefits Cards */}
+            <div className="grid md:grid-cols-3 gap-6 mt-12">
+                <div className="glass-panel p-6 rounded-xl text-center">
+                    <div className="text-4xl mb-4">⚡</div>
+                    <h3 className="text-lg font-bold text-white mb-2">100% Automático</h3>
+                    <p className="text-sm text-slate-400">Sube tu factura PDF y el sistema detecta automáticamente el importe y consumo en kWh</p>
+                </div>
+                <div className="glass-panel p-6 rounded-xl text-center">
+                    <div className="text-4xl mb-4">🔒</div>
+                    <h3 className="text-lg font-bold text-white mb-2">Privado y Seguro</h3>
+                    <p className="text-sm text-slate-400">Tu factura se procesa temporalmente y se elimina tras el análisis. Sin registro necesario</p>
+                </div>
+                <div className="glass-panel p-6 rounded-xl text-center">
+                    <div className="text-4xl mb-4">💰</div>
+                    <h3 className="text-lg font-bold text-white mb-2">Ahorro Garantizado</h3>
+                    <p className="text-sm text-slate-400">Comparamos con las 8 principales comercializadoras para encontrar la mejor tarifa para ti</p>
+                </div>
+            </div>
+
+            {/* FAQ Section - SEO Gold */}
+            <div className="mt-16">
+                <h2 className="text-2xl md:text-3xl font-bold mb-8 text-center">Preguntas Frecuentes sobre Tarifas de Luz en España</h2>
+                <div className="space-y-4">
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Qué es el PVPC y cómo afecta a mi factura de luz?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">El PVPC (Precio Voluntario para el Pequeño Consumidor) es la tarifa regulada de electricidad en España que cambia cada hora según el precio del mercado mayorista. Si tu tarifa está indexada al PVPC, pagas el precio real de la luz en cada momento. Esto puede generar ahorros si consumes en horas valle, pero también puede resultar más caro en horas punta.</p>
+                    </details>
+
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Cómo puedo ahorrar en mi factura de Iberdrola, Endesa o Naturgy?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">El primer paso es <strong>analizar tu factura actual</strong> y compararla con otras ofertas del mercado. Muchas veces, cambiar de tarifa dentro de la misma compañía o pasarte a otra comercializadora puede ahorrarte entre 100€ y 300€ al año. Nuestro comparador te muestra <strong>exactamente cuánto ahorrarías</strong> con cada opción disponible.</p>
+                    </details>
+
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Es seguro subir mi factura de luz a AnalizaMiFactura?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">Sí, completamente. Tu factura se procesa de forma <strong>temporal y segura</strong>. Extraemos únicamente el importe total y el consumo en kWh para realizar el análisis. No guardamos datos personales como tu nombre, dirección o cuenta bancaria. Una vez completado el análisis, el archivo se elimina automáticamente de nuestros servidores.</p>
+                    </details>
+
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Qué compañías eléctricas puedo comparar?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">Comparamos las principales <strong>comercializadoras eléctricas en España</strong>: Iberdrola, Endesa, Naturgy, Repsol, TotalEnergies, Octopus Energy, Holaluz y Podo. Analizamos tanto tarifas del mercado regulado (PVPC) como del mercado libre, mostrándote el ahorro potencial con cada una según tu perfil de consumo.</p>
+                    </details>
+
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Funciona para facturas de gas o solo electricidad?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">Actualmente, AnalizaMiFactura está optimizado exclusivamente para <strong>facturas de electricidad</strong> en la Península Ibérica. Nos especializamos en el análisis del suministro eléctrico y la comparación con el PVPC y tarifas del mercado libre. Estamos trabajando para incluir gas natural en el futuro.</p>
+                    </details>
+
+                    <details className="glass-panel p-6 rounded-xl cursor-pointer">
+                        <summary className="font-bold text-white text-lg">¿Cuál es el mejor momento del día para consumir electricidad?</summary>
+                        <p className="mt-4 text-slate-300 leading-relaxed">Si estás en tarifa PVPC, el <strong>precio de la luz es más barato por la noche</strong> (generalmente entre las 00:00 y las 08:00) y los fines de semana. Las horas más caras suelen ser entre las 18:00 y las 22:00 en días laborables. Programar electrodomésticos como lavadora, lavavajillas o carga de coche eléctrico en horas valle puede ahorrarte hasta un 40% en esos consumos.</p>
+                    </details>
+                </div>
+            </div>
+        </div>
     </div>
 );
 
