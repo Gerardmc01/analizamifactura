@@ -38,6 +38,10 @@ def add_security_headers(response):
 def index():
     return render_template('index.html')
 
+@app.route('/health')
+def health_check():
+    return "OK", 200
+
 @app.route('/api/subscribe', methods=['POST'])
 @limiter.limit("5 per hour") # Prevent spam
 def subscribe():

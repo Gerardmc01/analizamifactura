@@ -228,30 +228,80 @@ const ShareButtons = ({ savings }) => {
     );
 };
 
-const Navbar = ({ onNavigate, onStart, hasHistory }) => (
-    <nav className="flex items-center justify-between px-4 md:px-6 py-4 glass-panel sticky top-0 z-50">
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('landing')}>
-            <div className="bg-blue-500 p-1.5 rounded-lg">
-                <i data-lucide="zap" className="w-5 h-5 text-white"></i>
-            </div>
-            <span className="text-lg md:text-xl font-bold hidden sm:block">AnalizaMiFactura</span>
-        </div>
-        <div className="flex items-center gap-4">
-            <a href="/blog" className="text-sm text-slate-300 hover:text-white transition hidden md:block">Blog</a>
-            {hasHistory && (
-                <button onClick={() => onNavigate('history')} className="text-sm text-slate-300 hover:text-white transition">
-                    Historial
+const Navbar = ({ onNavigate, onStart, hasHistory }) => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    // Refresh icons when menu opens
+    useEffect(() => {
+        if (isMenuOpen && window.lucide) {
+            window.lucide.createIcons();
+        }
+    }, [isMenuOpen]);
+
+    const handleMobileNavigate = (page) => {
+        onNavigate(page);
+        setIsMenuOpen(false);
+    };
+
+    return (
+        <nav className="sticky top-0 z-50">
+            <div className="glass-panel px-4 md:px-6 py-4 flex items-center justify-between relative z-50">
+                <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate('landing')}>
+                    <div className="bg-blue-500 p-1.5 rounded-lg">
+                        <i data-lucide="zap" className="w-5 h-5 text-white"></i>
+                    </div>
+                    <span className="text-lg md:text-xl font-bold">AnalizaMiFactura</span>
+                </div>
+
+                {/* Desktop Menu */}
+                <div className="hidden md:flex items-center gap-4">
+                    <a href="/blog" className="text-sm text-slate-300 hover:text-white transition">Blog</a>
+                    {hasHistory && (
+                        <button onClick={() => onNavigate('history')} className="text-sm text-slate-300 hover:text-white transition">
+                            Historial
+                        </button>
+                    )}
+                    <button
+                        onClick={onStart}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition shadow-lg shadow-blue-500/20"
+                    >
+                        Analizar Factura
+                    </button>
+                </div>
+
+                {/* Mobile Menu Button */}
+                <button
+                    className="md:hidden text-white p-2"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    <i data-lucide={isMenuOpen ? "x" : "menu"} className="w-6 h-6"></i>
                 </button>
+            </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isMenuOpen && (
+                <div className="absolute top-full left-0 right-0 glass-panel border-t border-slate-700 p-4 flex flex-col gap-4 md:hidden animate-fade-in z-40">
+                    <a href="/blog" className="flex items-center gap-3 text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5">
+                        <i data-lucide="book-open" className="w-5 h-5"></i>
+                        Blog y Consejos
+                    </a>
+                    {hasHistory && (
+                        <button onClick={() => handleMobileNavigate('history')} className="flex items-center gap-3 text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5 w-full text-left">
+                            <i data-lucide="history" className="w-5 h-5"></i>
+                            Tu Historial
+                        </button>
+                    )}
+                    <button
+                        onClick={() => { onStart(); setIsMenuOpen(false); }}
+                        className="bg-blue-600 text-white p-3 rounded-xl font-bold text-center mt-2"
+                    >
+                        Analizar Factura Ahora
+                    </button>
+                </div>
             )}
-            <button
-                onClick={onStart}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition shadow-lg shadow-blue-500/20"
-            >
-                Analizar Factura
-            </button>
-        </div>
-    </nav>
-);
+        </nav>
+    );
+};
 
 const LandingPage = ({ onStart }) => (
     <div className="animate-fade-in">
