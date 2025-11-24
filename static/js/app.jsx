@@ -311,8 +311,8 @@ const LandingPage = ({ onStart }) => (
                 ✨ Tecnología de Auditoría Energética con IA
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                La Primera IA que <br />
-                <span className="gradient-text">Audita tu Factura</span>
+                Tu Factura de Luz, <br />
+                <span className="gradient-text">Optimizada por IA</span>
             </h1>
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
                 Sube tu PDF y nuestra Inteligencia Artificial detectará errores, sobrecostes y la mejor tarifa del mercado en segundos.
