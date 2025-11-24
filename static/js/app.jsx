@@ -308,14 +308,14 @@ const LandingPage = ({ onStart }) => (
         {/* Hero Section */}
         <div className="max-w-6xl mx-auto px-4 py-24 text-center">
             <div className="inline-block mb-4 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium animate-slide-up">
-                ✨ IA Avanzada de Análisis Energético
+                ✨ Tecnología de Auditoría Energética con IA
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                Deja de regalar dinero <br />
-                <span className="gradient-text">a tu eléctrica</span>
+                La Primera IA que <br />
+                <span className="gradient-text">Audita tu Factura</span>
             </h1>
             <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                Sube tu factura. Nuestra IA la analiza en segundos y te dice exactamente cuánto estás pagando de más (y cómo dejar de hacerlo).
+                Sube tu PDF y nuestra Inteligencia Artificial detectará errores, sobrecostes y la mejor tarifa del mercado en segundos.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.3s' }}>
