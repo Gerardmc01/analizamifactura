@@ -1,21 +1,8 @@
 import re
-from pypdf import PdfReader
+from ocr_engine import extract_text_hybrid
 from tariffs_database import TARIFAS_ELECTRICAS_ESPANA, PVPC_PROMEDIO_PENINSULA
 from esios_api import get_pvpc_price_today, estimate_consumption_from_bill, calculate_savings_with_tariff
 
-def extract_text_from_pdf(file_stream):
-    """
-    Extrae texto de un archivo PDF en memoria.
-    """
-    try:
-        reader = PdfReader(file_stream)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() + "\n"
-        return text
-    except Exception as e:
-        print(f"Error leyendo PDF: {e}")
-        return ""
 
 def clean_number(num_str):
     """
@@ -151,11 +138,12 @@ def analyze_electricity_bill(file_stream, filename):
     print(f"🔍 Iniciando análisis para: {filename}")
     
     try:
-        # 1. Extraer texto
+        # 1. Extraer texto con OCR Híbrido
         text = ""
         if filename.lower().endswith('.pdf'):
             try:
-                text = extract_text_from_pdf(file_stream)
+                text = extract_text_hybrid(file_stream)
+                print(f"✅ Texto extraído: {len(text)} caracteres")
             except Exception as e:
                 print(f"⚠️  Error extrayendo PDF: {e}")
         

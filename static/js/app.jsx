@@ -113,6 +113,80 @@ const SavingsChart = ({ current, potential }) => {
     );
 };
 
+const CostBreakdownChart = ({ total, kwh }) => {
+    const chartRef = useRef(null);
+    const chartInstance = useRef(null);
+
+    useEffect(() => {
+        if (chartRef.current && total > 0) {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+
+            // Estimación de desglose (basado en estructura típica factura española)
+            const energia = total * 0.45; // ~45% energía
+            const peajes = total * 0.30;  // ~30% peajes y cargos
+            const impuestos = total * 0.25; // ~25% impuestos (IVA + eléctrico)
+
+            const ctx = chartRef.current.getContext('2d');
+            chartInstance.current = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Energía', 'Peajes y Cargos', 'Impuestos'],
+                    datasets: [{
+                        data: [energia, peajes, impuestos],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',  // Blue
+                            'rgba(168, 85, 247, 0.8)',  // Purple
+                            'rgba(251, 191, 36, 0.8)'   // Yellow
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(168, 85, 247, 1)',
+                            'rgba(251, 191, 36, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#e2e8f0', padding: 15 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Desglose de tu Factura',
+                            color: '#e2e8f0',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const percent = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${value.toFixed(2)}€ (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        return () => {
+            if (chartInstance.current) chartInstance.current.destroy();
+        };
+    }, [total, kwh]);
+
+    return (
+        <div className="glass-panel p-6 rounded-2xl mb-8">
+            <canvas ref={chartRef}></canvas>
+        </div>
+    );
+};
+
 const CookieBanner = () => {
     const [accepted, setAccepted] = useState(() => localStorage.getItem('cookies_accepted'));
 
@@ -495,7 +569,33 @@ const ResultsPage = ({ data, onBack }) => {
                         </div>
                     </div>
 
-                    <SavingsChart current={parseFloat(data.current_total)} potential={parseFloat(data.potential_savings)} />
+                    {/* Métricas Adicionales */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div className="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20">
+                            <div className="text-blue-300 text-xs mb-1">Precio Medio</div>
+                            <div className="text-lg md:text-xl font-bold text-blue-400">
+                                {data.estimated_kwh > 0 ? (data.current_total / data.estimated_kwh).toFixed(3) : '0.000'}€/kWh
+                            </div>
+                        </div>
+                        <div className="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20">
+                            <div className="text-purple-300 text-xs mb-1">PVPC Hoy</div>
+                            <div className="text-lg md:text-xl font-bold text-purple-400">{data.pvpc_today}€/kWh</div>
+                        </div>
+                        <div className="bg-yellow-500/10 p-4 rounded-xl border border-yellow-500/20">
+                            <div className="text-yellow-300 text-xs mb-1">Ahorro Anual</div>
+                            <div className="text-lg md:text-xl font-bold text-yellow-400">~{(data.potential_savings * 12).toFixed(0)}€</div>
+                        </div>
+                        <div className="bg-green-500/10 p-4 rounded-xl border border-green-500/20">
+                            <div className="text-green-300 text-xs mb-1">Estado OCR</div>
+                            <div className="text-lg md:text-xl font-bold text-green-400">{data.ocr_success ? '✓ OK' : '⚠ Manual'}</div>
+                        </div>
+                    </div>
+
+                    {/* Gráficas */}
+                    <div className="grid md:grid-cols-2 gap-6 mb-8">
+                        <SavingsChart current={parseFloat(data.current_total)} potential={parseFloat(data.potential_savings)} />
+                        <CostBreakdownChart total={parseFloat(data.current_total)} kwh={data.estimated_kwh} />
+                    </div>
 
                     {data.potential_savings > 0 && (
                         <div className="text-center mb-8">
