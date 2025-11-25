@@ -605,28 +605,35 @@ const ResultsPage = ({ data, onBack }) => {
                     )}
 
                     <div className="space-y-6">
-                        <h3 className="text-xl font-bold mb-4">Mejores Tarifas para Ti</h3>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-xl font-bold">Mejores Tarifas para Ti</h3>
+                            <span className="text-xs text-slate-500">Datos actualizados del mercado</span>
+                        </div>
                         {data.recommendations.map((rec, i) => (
-                            <div key={i} className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 flex flex-col md:flex-row gap-6 items-center hover:border-blue-500/50 transition">
-                                <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <h4 className="font-bold text-lg">{rec.company}</h4>
-                                        <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">{rec.offer}</span>
+                            <div key={i} className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 hover:border-blue-500/30 transition">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h4 className="font-bold text-lg">{rec.company}</h4>
+                                            <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">{rec.offer}</span>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-sm text-slate-300">
+                                            <span>Precio: <strong>{rec.price_kwh}€/kWh</strong></span>
+                                            <span>•</span>
+                                            <span className="text-green-400 font-bold">Ahorrarías ~{rec.savings}€/mes</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-4 text-sm text-slate-300">
-                                        <span>Precio: <strong>{rec.price_kwh}€/kWh</strong></span>
-                                        <span>•</span>
-                                        <span className="text-green-400 font-bold">Ahorras {rec.savings}€</span>
+                                    <div className="text-right">
+                                        <div className="text-xs text-slate-500">Tipo</div>
+                                        <div className="text-sm font-medium text-blue-400">{rec.type}</div>
                                     </div>
                                 </div>
-                                <a
-                                    href={rec.affiliate_link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-full md:w-auto px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-xl transition text-center shadow-lg hover:shadow-green-500/20"
-                                >
-                                    Contratar Ahora →
-                                </a>
+                                <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                    <p className="text-xs text-slate-400">
+                                        💡 <strong>Cómo contratar:</strong> Busca "{rec.company} {rec.offer}" en Google o contacta directamente con la compañía.
+                                        Los precios mostrados son orientativos según datos públicos del mercado.
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -636,9 +643,13 @@ const ResultsPage = ({ data, onBack }) => {
             <EmailCapture />
 
             <div className="text-center mt-12">
-                <p className="text-slate-500 text-sm mb-4">
-                    Este análisis es una estimación basada en datos públicos del mercado.
-                </p>
+                <div className="glass-panel p-6 rounded-xl mb-6 max-w-2xl mx-auto">
+                    <p className="text-slate-400 text-sm leading-relaxed">
+                        ℹ️ <strong>Transparencia:</strong> Este análisis es una estimación basada en datos públicos del mercado eléctrico español (ESIOS/REE) y precios orientativos de comercializadoras.
+                        Los precios reales pueden variar según promociones, condiciones específicas y tu perfil de consumo.
+                        <strong> No somos una comercializadora</strong> ni tenemos acuerdos comerciales con ninguna empresa eléctrica.
+                    </p>
+                </div>
                 <button onClick={onBack} className="text-blue-400 hover:text-blue-300 font-medium">
                     Analizar otra factura
                 </button>

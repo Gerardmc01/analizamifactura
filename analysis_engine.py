@@ -151,9 +151,27 @@ def analyze_electricity_bill(file_stream, filename):
         company = detect_company(text)
         total_amount = find_total_amount(text)
         detected_kwh = find_consumption_kwh(text)
-        ocr_success = total_amount > 0
         
         print(f"🏢 Compañía detectada: {company}")
+        print(f"💰 Importe detectado: {total_amount}€")
+        print(f"⚡ Consumo detectado: {detected_kwh} kWh")
+        
+        # ⚠️ MODO ESTRICTO: Si no detectamos datos reales, ERROR
+        if total_amount == 0:
+            return {
+                "success": False,
+                "error": "No pudimos leer el importe de tu factura. Por favor, verifica que sea un PDF válido de una factura eléctrica española.",
+                "score": 0,
+                "current_total": 0,
+                "anomalies": ["❌ OCR falló: No se detectó el importe total"],
+                "recommendations": [],
+                "ocr_success": False
+            }
+        
+        if detected_kwh == 0:
+            print("⚠️ No se detectó consumo en kWh, se estimará")
+        
+        ocr_success = total_amount > 0
         
         # 3. Obtener datos de mercado
         pvpc_data = get_pvpc_price_today()
@@ -220,6 +238,7 @@ def analyze_electricity_bill(file_stream, filename):
             else: score = 85
             
         return {
+            "success": True,  # ✅ Análisis exitoso
             "score": score,
             "current_total": round(total_amount, 2),
             "market_average": round(pvpc_price * estimated_kwh * 1.25, 2), # +impuestos aprox

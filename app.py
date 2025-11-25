@@ -92,11 +92,18 @@ def analyze():
         # Analizar factura
         result = analyze_electricity_bill(file_stream, filename)
         
-        # Verificar que se haya detectado el importe
-        if result['current_total'] == 0:
+        # ⚠️ MODO ESTRICTO: Si el análisis falló, devolver error claro
+        if not result.get('success', True):  # Si success=False o no existe (legacy), verificar current_total
             return jsonify({
                 "success": False,
-                "error": "No pudimos leer tu factura. Verifica que sea un PDF con texto legible (no una imagen escaneada)."
+                "error": result.get('error', 'No pudimos leer tu factura. Verifica que sea un PDF válido de una factura eléctrica.')
+            })
+        
+        # Verificar que se haya detectado el importe (doble check)
+        if result.get('current_total', 0) == 0:
+            return jsonify({
+                "success": False,
+                "error": "No pudimos detectar el importe total de tu factura. Asegúrate de que el PDF contenga texto legible."
             })
         
         # Obtener o crear user_id
