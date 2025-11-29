@@ -3,12 +3,13 @@ const { useState, useEffect, useRef } = React;
 // --- FIREBASE CONFIGURATION ---
 // ⚠️ IMPORTANTE: REEMPLAZA ESTO CON TUS DATOS DE FIREBASE CONSOLE
 const firebaseConfig = {
-    apiKey: "TU_API_KEY_AQUI",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROJECT_ID",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+    apiKey: "AIzaSyCaapQb2XuXy3sWEvHir5tQvb_aEgV1wnE",
+    authDomain: "frigolens-b7d38.firebaseapp.com",
+    projectId: "frigolens-b7d38",
+    storageBucket: "frigolens-b7d38.firebasestorage.app",
+    messagingSenderId: "406104892986",
+    appId: "1:406104892986:web:cd2e4d58078e246a177703",
+    measurementId: "G-YXTHMZ82Z4"
 };
 
 // Initialize Firebase
