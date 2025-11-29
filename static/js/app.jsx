@@ -1,5 +1,5 @@
-console.log("App.jsx loaded v3");
-const { useState, useEffect, useRef } = React;
+console.log("App.jsx loaded v4 - Fix Lucide Crash");
+const { useState, useEffect, useRef, useMemo } = React;
 
 // --- FIREBASE CONFIGURATION ---
 const firebaseConfig = {
@@ -16,6 +16,30 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
+
+// --- SAFE ICON COMPONENT ---
+// This prevents the "removeChild" error by handling SVG generation manually
+const Icon = ({ name, className, size = 24 }) => {
+    const svgHtml = useMemo(() => {
+        if (window.lucide && window.lucide.icons && window.lucide.icons[name]) {
+            // Convert kebab-case to PascalCase for Lucide keys if needed (e.g. arrow-right -> ArrowRight)
+            // But Lucide global object usually has keys like "ArrowRight" or "arrow-right" depending on version.
+            // Let's try to find the icon flexibly.
+            const iconName = name.split('-').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+            const icon = window.lucide.icons[iconName] || window.lucide.icons[name];
+
+            if (icon) {
+                // Create SVG string
+                return icon.toSvg({ class: className, width: size, height: size });
+            }
+        }
+        return '';
+    }, [name, className, size]);
+
+    if (!svgHtml) return <span className={`inline-block ${className}`} style={{ width: size, height: size }}></span>;
+
+    return <span dangerouslySetInnerHTML={{ __html: svgHtml }} className="inline-flex items-center justify-center" />;
+};
 
 // --- COMPONENTS ---
 
@@ -44,7 +68,7 @@ const UserMenu = ({ user, onLogin, onLogout }) => {
                 >
                     <img src={user.photoURL || 'https://via.placeholder.com/24'} alt="User" className="w-8 h-8 rounded-full border border-slate-600" />
                     <span className="hidden md:inline font-medium">{user.displayName || user.email.split('@')[0]}</span>
-                    <i data-lucide="chevron-down" className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}></i>
+                    <Icon name="chevron-down" className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
             ) : (
                 <button
@@ -66,7 +90,7 @@ const UserMenu = ({ user, onLogin, onLogout }) => {
                         onClick={() => { onLogout(); setIsOpen(false); }}
                         className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
                     >
-                        <i data-lucide="log-out" className="w-4 h-4"></i>
+                        <Icon name="log-out" className="w-4 h-4" />
                         Cerrar Sesión
                     </button>
                 </div>
@@ -78,16 +102,12 @@ const UserMenu = ({ user, onLogin, onLogout }) => {
 const Navbar = ({ onNavigate, user, onLogin, onLogout }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    useEffect(() => {
-        if (window.lucide) window.lucide.createIcons();
-    }, [isMenuOpen, user]);
-
     return (
         <nav className="sticky top-0 z-50 border-b border-white/5 bg-slate-900/80 backdrop-blur-md">
             <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 cursor-pointer group" onClick={() => onNavigate('landing')}>
                     <div className="bg-blue-600 p-2 rounded-xl group-hover:scale-110 transition duration-300 shadow-lg shadow-blue-500/20">
-                        <i data-lucide="zap" className="w-5 h-5 text-white"></i>
+                        <Icon name="zap" className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
                         AnalizaMiFactura
@@ -107,7 +127,7 @@ const Navbar = ({ onNavigate, user, onLogin, onLogout }) => {
 
                 {/* Mobile Menu Button */}
                 <button className="md:hidden text-white p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                    <i data-lucide={isMenuOpen ? "x" : "menu"} className="w-6 h-6"></i>
+                    <Icon name={isMenuOpen ? "x" : "menu"} className="w-6 h-6" />
                 </button>
             </div>
 
@@ -124,15 +144,15 @@ const Navbar = ({ onNavigate, user, onLogin, onLogout }) => {
                                 </div>
                             </div>
                             <button onClick={() => { onNavigate('dashboard'); setIsMenuOpen(false); }} className="flex items-center gap-3 p-3 text-slate-300 hover:bg-slate-800 rounded-xl">
-                                <i data-lucide="layout-dashboard" className="w-5 h-5"></i> Mi Panel
+                                <Icon name="layout-dashboard" className="w-5 h-5" /> Mi Panel
                             </button>
                             <button onClick={onLogout} className="flex items-center gap-3 p-3 text-red-400 hover:bg-red-500/10 rounded-xl">
-                                <i data-lucide="log-out" className="w-5 h-5"></i> Cerrar Sesión
+                                <Icon name="log-out" className="w-5 h-5" /> Cerrar Sesión
                             </button>
                         </>
                     ) : (
                         <button onClick={() => { onLogin(); setIsMenuOpen(false); }} className="flex items-center gap-3 p-3 bg-blue-600 text-white rounded-xl justify-center font-bold">
-                            <i data-lucide="log-in" className="w-5 h-5"></i> Entrar con Google
+                            <Icon name="log-in" className="w-5 h-5" /> Entrar con Google
                         </button>
                     )}
                 </div>
@@ -192,7 +212,7 @@ const Dashboard = ({ history, onUpload, onViewBill, user }) => {
                     <p className="text-slate-400">Aquí tienes el control de tu energía.</p>
                 </div>
                 <button onClick={onUpload} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-blue-500/20 flex items-center gap-2 transition transform hover:scale-105">
-                    <i data-lucide="plus" className="w-5 h-5"></i> Subir Factura
+                    <Icon name="plus" className="w-5 h-5" /> Subir Factura
                 </button>
             </div>
 
@@ -219,7 +239,7 @@ const Dashboard = ({ history, onUpload, onViewBill, user }) => {
                 <div className="grid md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 glass-panel p-6 rounded-2xl">
                         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <i data-lucide="bar-chart-3" className="w-5 h-5 text-blue-400"></i> Evolución de Gasto
+                            <Icon name="bar-chart-3" className="w-5 h-5 text-blue-400" /> Evolución de Gasto
                         </h3>
                         <div className="h-64 w-full"><BarChart data={chartData} /></div>
                     </div>
@@ -234,7 +254,7 @@ const Dashboard = ({ history, onUpload, onViewBill, user }) => {
                                     </div>
                                     <div className="text-right">
                                         <div className="font-bold text-blue-400">{f.importe_total}€</div>
-                                        <i data-lucide="chevron-right" className="w-4 h-4 text-slate-500 group-hover:text-white opacity-0 group-hover:opacity-100 transition"></i>
+                                        <Icon name="chevron-right" className="w-4 h-4 text-slate-500 group-hover:text-white opacity-0 group-hover:opacity-100 transition" />
                                     </div>
                                 </div>
                             ))}
@@ -244,7 +264,7 @@ const Dashboard = ({ history, onUpload, onViewBill, user }) => {
             ) : (
                 <div className="glass-panel p-12 rounded-2xl text-center border-2 border-dashed border-slate-700">
                     <div className="bg-slate-800 inline-block p-4 rounded-full mb-4">
-                        <i data-lucide="upload-cloud" className="w-8 h-8 text-slate-400"></i>
+                        <Icon name="upload-cloud" className="w-8 h-8 text-slate-400" />
                     </div>
                     <h3 className="text-xl font-bold mb-2">Tu panel está vacío</h3>
                     <p className="text-slate-400 mb-6">Sube tu primera factura para empezar a controlar tu gasto.</p>
@@ -295,7 +315,7 @@ const UploadPage = ({ onUpload, error }) => {
             >
                 <div className="flex flex-col items-center gap-6">
                     <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center">
-                        <i data-lucide="upload" className="w-8 h-8 text-blue-400"></i>
+                        <Icon name="upload" className="w-8 h-8 text-blue-400" />
                     </div>
                     <div>
                         <p className="text-lg font-medium mb-2">Arrastra tu PDF aquí</p>
@@ -309,7 +329,7 @@ const UploadPage = ({ onUpload, error }) => {
             </div>
             {error && (
                 <div className="mt-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 flex items-center justify-center gap-2 animate-fade-in">
-                    <i data-lucide="alert-triangle" className="w-5 h-5"></i> {error}
+                    <Icon name="alert-triangle" className="w-5 h-5" /> {error}
                 </div>
             )}
         </div>
@@ -368,20 +388,20 @@ const ResultsPage = ({ data, onBack }) => {
 
                 <div className="glass-panel p-6 rounded-2xl border border-slate-700 relative z-10">
                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                        <i data-lucide="trending-up" className="w-5 h-5 text-blue-400"></i> Análisis de Mercado
+                        <Icon name="trending-up" className="w-5 h-5 text-blue-400" /> Análisis de Mercado
                     </h3>
                     <p className="text-slate-300 mb-6">Comparativa con el mercado actual.</p>
                     <div className="space-y-4">
                         <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700">
                             <div className="flex items-center gap-3">
-                                <div className="bg-blue-500/20 p-2 rounded-lg"><i data-lucide="zap" className="w-5 h-5 text-blue-400"></i></div>
+                                <div className="bg-blue-500/20 p-2 rounded-lg"><Icon name="zap" className="w-5 h-5 text-blue-400" /></div>
                                 <div><div className="font-bold">Tu Precio</div><div className="text-xs text-slate-400">Calculado</div></div>
                             </div>
                             <div className="text-xl font-bold">{data.estimated_kwh > 0 ? (data.current_total / data.estimated_kwh).toFixed(3) : '0.000'} €/kWh</div>
                         </div>
                         <div className="flex items-center justify-between p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
                             <div className="flex items-center gap-3">
-                                <div className="bg-purple-500/20 p-2 rounded-lg"><i data-lucide="bar-chart-2" className="w-5 h-5 text-purple-400"></i></div>
+                                <div className="bg-purple-500/20 p-2 rounded-lg"><Icon name="bar-chart-2" className="w-5 h-5 text-purple-400" /></div>
                                 <div><div className="font-bold">Mercado (PVPC)</div><div className="text-xs text-slate-400">Referencia</div></div>
                             </div>
                             <div className="text-xl font-bold text-purple-400">{data.pvpc_today} €/kWh</div>
@@ -431,8 +451,6 @@ const App = () => {
         return () => unsubscribe();
     }, []);
 
-    useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [view, user]);
-
     const handleLogin = async () => {
         const provider = new firebase.auth.GoogleAuthProvider();
         try { await firebase.auth().signInWithPopup(provider); }
@@ -476,7 +494,7 @@ const App = () => {
         }
     };
 
-    if (loadingAuth) return <div className="min-h-screen flex items-center justify-center text-blue-500"><i data-lucide="loader-2" className="w-8 h-8 animate-spin"></i></div>;
+    if (loadingAuth) return <div className="min-h-screen flex items-center justify-center text-blue-500"><Icon name="loader-2" className="w-8 h-8 animate-spin" /></div>;
 
     return (
         <div className="min-h-screen flex flex-col text-slate-200 font-sans selection:bg-blue-500/30">
