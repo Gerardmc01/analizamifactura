@@ -604,38 +604,58 @@ const ResultsPage = ({ data, onBack }) => {
                         </div>
                     )}
 
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-xl font-bold">Mejores Tarifas para Ti</h3>
-                            <span className="text-xs text-slate-500">Datos actualizados del mercado</span>
-                        </div>
-                        {data.recommendations.map((rec, i) => (
-                            <div key={i} className="bg-slate-800/30 p-6 rounded-xl border border-slate-700 hover:border-blue-500/30 transition">
-                                <div className="flex items-start justify-between mb-3">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <h4 className="font-bold text-lg">{rec.company}</h4>
-                                            <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">{rec.offer}</span>
-                                        </div>
-                                        <div className="flex items-center gap-4 text-sm text-slate-300">
-                                            <span>Precio: <strong>{rec.price_kwh}€/kWh</strong></span>
-                                            <span>•</span>
-                                            <span className="text-green-400 font-bold">Ahorrarías ~{rec.savings}€/mes</span>
-                                        </div>
+                    <div className="glass-panel p-6 rounded-2xl border border-slate-700">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                            <i data-lucide="trending-up" className="w-5 h-5 text-blue-400"></i>
+                            Análisis de Mercado
+                        </h3>
+                        <p className="text-slate-300 mb-6">
+                            Hemos comparado tu precio actual con el promedio del mercado regulado (PVPC) y las mejores ofertas del mercado libre.
+                        </p>
+
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-xl border border-slate-700">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-blue-500/20 p-2 rounded-lg">
+                                        <i data-lucide="zap" className="w-5 h-5 text-blue-400"></i>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-xs text-slate-500">Tipo</div>
-                                        <div className="text-sm font-medium text-blue-400">{rec.type}</div>
+                                    <div>
+                                        <div className="font-bold">Tu Precio Estimado</div>
+                                        <div className="text-xs text-slate-400">Basado en tu factura</div>
                                     </div>
                                 </div>
-                                <div className="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                                    <p className="text-xs text-slate-400">
-                                        💡 <strong>Cómo contratar:</strong> Busca "{rec.company} {rec.offer}" en Google o contacta directamente con la compañía.
-                                        Los precios mostrados son orientativos según datos públicos del mercado.
-                                    </p>
+                                <div className="text-xl font-bold">
+                                    {data.estimated_kwh > 0 ? (data.current_total / data.estimated_kwh).toFixed(3) : '0.000'} €/kWh
                                 </div>
                             </div>
-                        ))}
+
+                            <div className="flex items-center justify-between p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-purple-500/20 p-2 rounded-lg">
+                                        <i data-lucide="bar-chart-2" className="w-5 h-5 text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <div className="font-bold">Precio Mercado (PVPC)</div>
+                                        <div className="text-xs text-slate-400">Promedio hoy</div>
+                                    </div>
+                                </div>
+                                <div className="text-xl font-bold text-purple-400">
+                                    {data.pvpc_today} €/kWh
+                                </div>
+                            </div>
+
+                            <div className="mt-6 p-4 bg-blue-900/20 rounded-xl border border-blue-500/30">
+                                <h4 className="font-bold text-blue-300 mb-2">💡 Nuestra Conclusión</h4>
+                                <p className="text-sm text-slate-300">
+                                    {data.score > 70
+                                        ? "¡Tienes una tarifa excelente! Estás pagando por debajo o igual que la media del mercado. No te recomendamos cambiar por ahora."
+                                        : (data.score > 40
+                                            ? "Tu tarifa es aceptable, pero podrías ahorrar unos euros si buscas ofertas puntuales. El mercado está muy competitivo."
+                                            : "Estás pagando bastante más que la media del mercado. Te recomendamos revisar tu contrato o buscar alternativas en el mercado libre o regulado.")
+                                    }
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
