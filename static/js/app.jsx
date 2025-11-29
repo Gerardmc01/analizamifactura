@@ -1,9 +1,53 @@
 const { useState, useEffect, useRef } = React;
 
+// --- FIREBASE CONFIGURATION ---
+// ⚠️ IMPORTANTE: REEMPLAZA ESTO CON TUS DATOS DE FIREBASE CONSOLE
+const firebaseConfig = {
+    apiKey: "TU_API_KEY_AQUI",
+    authDomain: "TU_PROYECTO.firebaseapp.com",
+    projectId: "TU_PROJECT_ID",
+    storageBucket: "TU_PROYECTO.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+};
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
 // --- Components ---
 
-const Testimonials = () => {
+const UserMenu = ({ user, onLogin, onLogout }) => {
+    if (user) {
+        return (
+            <div className="flex items-center gap-4">
+                <div className="hidden md:block text-right">
+                    <div className="text-sm font-bold text-white">{user.displayName}</div>
+                    <div className="text-xs text-slate-400">{user.email}</div>
+                </div>
+                <img
+                    src={user.photoURL}
+                    alt={user.displayName}
+                    className="w-10 h-10 rounded-full border-2 border-blue-500 cursor-pointer hover:opacity-80 transition"
+                    onClick={onLogout}
+                    title="Cerrar Sesión"
+                />
+            </div>
+        );
+    }
+    return (
+        <button
+            onClick={onLogin}
+            className="flex items-center gap-2 bg-white text-slate-900 px-4 py-2 rounded-full font-bold hover:bg-slate-100 transition shadow-lg"
+        >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+            <span>Entrar con Google</span>
+        </button>
+    );
+};
+
+const Navbar = ({ onNavigate, onStart, user, onLogin, onLogout }) => {
     const testimonials = [
         {
             name: "María G.",
@@ -302,7 +346,61 @@ const ShareButtons = ({ savings }) => {
     );
 };
 
-const Navbar = ({ onNavigate, onStart, hasHistory }) => {
+const UserMenu = ({ user, onLogin, onLogout }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [menuRef]);
+
+    return (
+        <div className="relative" ref={menuRef}>
+            {user ? (
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center gap-2 text-sm text-slate-300 hover:text-white transition p-2 rounded-full bg-slate-800/50 border border-slate-700"
+                >
+                    <img src={user.photoURL || 'https://via.placeholder.com/24'} alt="User Avatar" className="w-6 h-6 rounded-full" />
+                    <span className="hidden md:inline">{user.displayName || user.email}</span>
+                    <i data-lucide="chevron-down" className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}></i>
+                </button>
+            ) : (
+                <button
+                    onClick={onLogin}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition shadow-lg shadow-blue-500/20"
+                >
+                    Entrar con Google
+                </button>
+            )}
+
+            {isOpen && user && (
+                <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-lg py-1 z-50">
+                    <div className="px-4 py-2 text-sm text-slate-400 border-b border-slate-700">
+                        {user.email}
+                    </div>
+                    <button
+                        onClick={() => { onLogout(); setIsOpen(false); }}
+                        className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-slate-700"
+                    >
+                        <i data-lucide="log-out" className="w-4 h-4"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+};
+
+const Navbar = ({ onNavigate, onStart, user, onLogin, onLogout }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Refresh icons when menu opens
@@ -330,17 +428,12 @@ const Navbar = ({ onNavigate, onStart, hasHistory }) => {
                 {/* Desktop Menu */}
                 <div className="hidden md:flex items-center gap-4">
                     <a href="/blog" className="text-sm text-slate-300 hover:text-white transition">Blog</a>
-                    {hasHistory && (
-                        <button onClick={() => onNavigate('history')} className="text-sm text-slate-300 hover:text-white transition">
-                            Historial
+                    {user && (
+                        <button onClick={() => onNavigate('dashboard')} className="text-sm text-slate-300 hover:text-white transition">
+                            Mi Panel
                         </button>
                     )}
-                    <button
-                        onClick={onStart}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full text-sm font-medium transition shadow-lg shadow-blue-500/20"
-                    >
-                        Analizar Factura
-                    </button>
+                    <UserMenu user={user} onLogin={onLogin} onLogout={onLogout} />
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -359,18 +452,23 @@ const Navbar = ({ onNavigate, onStart, hasHistory }) => {
                         <i data-lucide="book-open" className="w-5 h-5"></i>
                         Blog y Consejos
                     </a>
-                    {hasHistory && (
-                        <button onClick={() => handleMobileNavigate('history')} className="flex items-center gap-3 text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5 w-full text-left">
-                            <i data-lucide="history" className="w-5 h-5"></i>
-                            Tu Historial
+                    {user ? (
+                        <>
+                            <button onClick={() => handleMobileNavigate('dashboard')} className="flex items-center gap-3 text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5 w-full text-left">
+                                <i data-lucide="layout-dashboard" className="w-5 h-5"></i>
+                                Mi Panel
+                            </button>
+                            <button onClick={onLogout} className="flex items-center gap-3 text-red-400 hover:text-red-300 p-2 rounded-lg hover:bg-white/5 w-full text-left">
+                                <i data-lucide="log-out" className="w-5 h-5"></i>
+                                Cerrar Sesión
+                            </button>
+                        </>
+                    ) : (
+                        <button onClick={onLogin} className="flex items-center gap-3 text-white p-2 rounded-lg hover:bg-white/5 w-full text-left font-bold">
+                            <i data-lucide="log-in" className="w-5 h-5"></i>
+                            Entrar con Google
                         </button>
                     )}
-                    <button
-                        onClick={() => { onStart(); setIsMenuOpen(false); }}
-                        className="bg-blue-600 text-white p-3 rounded-xl font-bold text-center mt-2"
-                    >
-                        Analizar Factura Ahora
-                    </button>
                 </div>
             )}
         </nav>

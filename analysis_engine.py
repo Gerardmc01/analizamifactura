@@ -131,6 +131,36 @@ def find_consumption_kwh(text):
     return 0
 
 
+def find_billing_period(text):
+    """
+    Intenta detectar el periodo de facturación (fechas).
+    Retorna un string legible ej: "01/01/2024 - 31/01/2024"
+    """
+    if not text:
+        return None
+        
+    # Patrones comunes de fechas en facturas
+    # Ej: "Periodo de facturación: 10/01/2024 a 10/02/2024"
+    date_pattern = r"(\d{2}[/-]\d{2}[/-]\d{4})"
+    
+    # Buscar rangos de fechas
+    range_patterns = [
+        f"facturación.*{date_pattern}.*{date_pattern}",
+        f"consumo.*{date_pattern}.*{date_pattern}",
+        f"periodo.*{date_pattern}.*{date_pattern}",
+        f"desde.*{date_pattern}.*hasta.*{date_pattern}"
+    ]
+    
+    for pattern in range_patterns:
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        if matches:
+            # matches será una lista de tuplas [('01/01/2024', '31/01/2024')]
+            start, end = matches[0]
+            return f"{start} - {end}"
+            
+    return None
+
+
 def analyze_electricity_bill(file_stream, filename):
     """
     Análisis REAL de facturas de luz.
@@ -151,10 +181,12 @@ def analyze_electricity_bill(file_stream, filename):
         company = detect_company(text)
         total_amount = find_total_amount(text)
         detected_kwh = find_consumption_kwh(text)
+        billing_period = find_billing_period(text)
         
         print(f"🏢 Compañía detectada: {company}")
         print(f"💰 Importe detectado: {total_amount}€")
         print(f"⚡ Consumo detectado: {detected_kwh} kWh")
+        print(f"📅 Periodo detectado: {billing_period}")
         
         # ⚠️ MODO ESTRICTO: Si no detectamos datos reales, ERROR
         if total_amount == 0:
@@ -248,7 +280,8 @@ def analyze_electricity_bill(file_stream, filename):
             "ocr_success": ocr_success,
             "pvpc_today": pvpc_price,
             "estimated_kwh": estimated_kwh,
-            "filename": filename
+            "filename": filename,
+            "billing_period": billing_period
         }
         
     except Exception as e:
