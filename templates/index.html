@@ -219,9 +219,16 @@
 
 <body>
   <div id="root"></div>
+  <div id="error-container" style="color: red; padding: 20px; display: none;"></div>
+  <script>
+    window.onerror = function (message, source, lineno, colno, error) {
+      document.getElementById('error-container').style.display = 'block';
+      document.getElementById('error-container').innerHTML = '<h3>Error:</h3>' + message + '<br>Line: ' + lineno;
+    };
+  </script>
 
   <!-- Main React Application -->
-  <script type="text/babel" src="/static/js/app.jsx"></script>
+  <script type="text/babel" src="/static/js/app.jsx?v=3"></script>
 
   <!-- Initialize Lucide Icons after render (handled in React usually, but we might need a helper) -->
 </body>

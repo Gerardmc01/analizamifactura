@@ -1,3 +1,4 @@
+console.log("App.jsx loaded v3");
 const { useState, useEffect, useRef } = React;
 
 // --- FIREBASE CONFIGURATION ---
